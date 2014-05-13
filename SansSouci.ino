@@ -478,13 +478,13 @@ void setup()
 
   //locate devices on the bus, print out the # of thermometers
 
-  Serial.print("DEBUG:Arduino has started ");
-  
-  debugMessage = String("Found ");
-  debugMessage += String(sensors.getDeviceCount());
-  debugMessage += String(" Thermometers.");
-  Serial.print(debugMessage);
-  Serial.println();
+//  Serial.print("DEBUG:Arduino has started ");
+//  
+//  debugMessage = String("Found ");
+//  debugMessage += String(sensors.getDeviceCount());
+//  debugMessage += String(" Thermometers.");
+//  Serial.print(debugMessage);
+//  Serial.println();
 
   
  
@@ -504,21 +504,21 @@ void setup()
     
 
     // show the addresses we found on the bus
-    Serial.print("Device:"); 
-    Serial.print(i);
-    printAddress(thermometers[i]);
-    Serial.print(" Address");
-    Serial.println();
-   
-    Serial.print("Device"); 
-    Serial.print(i);
-    printAlarms(thermometers[i]);
-    Serial.print(" Alarms");
-    Serial.println();
-    
-    
-    Serial.println("Setting alarm temps...");
-   
+//    Serial.print("Device:"); 
+//    Serial.print(i);
+//    printAddress(thermometers[i]);
+//    Serial.print(" Address");
+//    Serial.println();
+//   
+//    Serial.print("Device"); 
+//    Serial.print(i);
+//    printAlarms(thermometers[i]);
+//    Serial.print(" Alarms");
+//    Serial.println();
+//    
+//    
+//    Serial.println("Setting alarm temps...");
+//   
     // alarm when temp is higher than max
     sensors.setHighAlarmTemp(thermometers[i], 125);
     
@@ -526,9 +526,9 @@ void setup()
     sensors.setLowAlarmTemp(thermometers[i], -10);
     
     
-    Serial.print("New Device N Alarms: ");
-    printAlarms(thermometers[i]);
-    Serial.println();
+//    Serial.print("New Device N Alarms: ");
+//    printAlarms(thermometers[i]);
+//    Serial.println();
     sensors.setAlarmHandler(&alarmHandler);
     
     
@@ -541,8 +541,8 @@ void setup()
   //Alarm.timerRepeat(15, sendInfoCB);
   Alarm.timerRepeat(1, processIncomingSerial);
 
-
-  Serial.println(";");
+//
+//  Serial.println(";");
 }
 
 // function to print a device address
