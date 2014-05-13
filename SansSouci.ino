@@ -137,7 +137,7 @@ void onReturnStatus()
 //  The return value will be "ReturnTemps,SensorA|TempA,SensorB|TempB...."
 void onGetTemps()
 {
-  Serial.print("INFO:");
+  
   
   byte i;
   for (i = 0; i< NUM_OF_THERMOMETERS -1 ;i ++)
@@ -149,8 +149,6 @@ void onGetTemps()
 	  Serial.print("|");
 	  Serial.print(sensors.getTempF(thermometers[i]));
 	  Serial.print(",");
-      //cmdMessenger.sendCmdArg(i);
-      //cmdMessenger.sendCmdArg(sensors.getTempF(thermometers[i]));
     }
   }
   if (thermometersActive[i])
@@ -159,14 +157,10 @@ void onGetTemps()
 	  Serial.print(i);
 	  Serial.print("|");
 	  Serial.print(sensors.getTempF(thermometers[i]));
-//	  Serial.print(",");
-      //cmdMessenger.sendCmdArg(i);
-      //cmdMessenger.sendCmdArg(sensors.getTempF(thermometers[i]));
     }
  
   Serial.print(";");
   Serial.println();
-  //cmdMessenger.sendCmdEnd();    
 }
 //  Called function to send back all of the temperature probes' temperature
 void onGetTemp()
@@ -281,13 +275,12 @@ void onSetTempAlarmHigh()
   byte i = cmdMessenger.readIntArg();
   float tempF = cmdMessenger.readFloatArg();
 
-//  Serial.print("INFO:");
+
   if (thermometersActive[i])
   {
     sensors.setHighAlarmTemp(thermometers[i], sensors.toCelsius(tempF));
-//	printAlarmInfoByIndex(i);
   }
-//  Serial.println(";");
+
 
 }
 
@@ -298,13 +291,11 @@ void onSetTempAlarmLow()
   byte whichWire = cmdMessenger.readIntArg();
   float tempF = cmdMessenger.readFloatArg();
 
-//  Serial.print("INFO:");
   if (thermometersActive[whichWire])
   {
     sensors.setLowAlarmTemp(thermometers[whichWire], sensors.toCelsius(tempF));
-//	printAlarmInfoByIndex(whichWire);
+
   }
-//  Serial.println(";");
 }
 
 // Called function to send back specific temperature probe's temperature
@@ -317,9 +308,7 @@ void onClearTempAlarms()
 	sensors.setHighAlarmTemp(thermometers[i], 125);
 	sensors.setLowAlarmTemp(thermometers[i], -10);
   }
-//  Serial.print("INFO:");
-//  printAlarmInfoByIndex(i);
-//  Serial.println(";");
+
 }
 // Called function to send back specific temperature probe's temperature
 void onGetTimer()
