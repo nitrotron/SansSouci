@@ -47,6 +47,9 @@ DeviceAddress thermometers[NUM_OF_THERMOMETERS];
 bool thermometersActive[NUM_OF_THERMOMETERS];
 bool thermometerAlarmTriggered[NUM_OF_THERMOMETERS];
 
+bool TempAlarmActive = 0;
+uint8_t  WhichThermometerAlarmActive = 0;
+bool TimerAlarmActive = 0;
 
 
 // Database and time variables
@@ -86,9 +89,10 @@ enum
     GetTimer,//10
     SetTimer,//11
     ResetAlarm,//12  
-    StartLogging,//13
-    StopLogging,//14
-    SetPIDSetPoint//15
+    GetAlarmStatus, //13
+    StartLogging,//14
+    StopLogging,//15
+    SetPIDSetPoint//16
 };
 
 // Callbacks define on which received commands we take action
@@ -108,6 +112,7 @@ void attachCommandCallbacks()
   cmdMessenger.attach(GetTimer,  			  onGetTimer);
   cmdMessenger.attach(SetTimer,  			  onSetTimer);
   cmdMessenger.attach(ResetAlarm,		      onResetAlarm);
+  cmdMessenger.attach(GetAlarmStatus,         onGetAlarmStatus);
   cmdMessenger.attach(StartLogging,           onStartLogging);
   cmdMessenger.attach(StopLogging,            onStopLogging);
   cmdMessenger.attach(SetPIDSetPoint,         onSetPIDSetPoint);
@@ -329,7 +334,7 @@ void onSetTimer()
   float minutes = cmdMessenger.readFloatArg(); 
   
 
-  AlarmId id = Alarm.timerOnce(minutes * 60, turnOnAlarm);
+  AlarmId id = Alarm.timerOnce(minutes * 60, timerAlarmHandler);
 //  
 //  Serial.print("INFO:TimerAlarm");
 //  Serial.print(id);
@@ -349,7 +354,22 @@ void onInterrupt()
 void onResetAlarm()
 {
   turnOffAlarm();
+  TempAlarmActive = 0;
+  WhichThermometerAlarmActive = 0;
+  TimerAlarmActive = 0;
+
 //  Serial.println("INFO:AlarmOn|0;");
+}
+
+void onGetAlarmStatus()
+{
+  Serial.print("INFO:TempAlarmActive|");
+  Serial.print(TempAlarmActive);
+  Serial.print(",TimerAlarmActive|");
+  Serial.print(TimerAlarmActive);
+  Serial.print(",WhichThermoAlarm|");
+  Serial.print(WhichThermometerAlarmActive);
+  Serial.println(";");
 }
 
 void onStartLogging()
@@ -379,9 +399,11 @@ void onSetPIDSetPoint()
 // function that will be called when an alarm condition exists during DallasTemperatures::processAlarms();
 void alarmHandler(uint8_t* deviceAddress)
 {
-  Serial.print("INFO:TempAlarmTriggerID|");
-  Serial.print(whichThermometer(deviceAddress));
-  Serial.println(";");
+//  Serial.print("INFO:TempAlarmTriggerID|");
+//  Serial.print(whichThermometer(deviceAddress));
+//  Serial.println(";");
+  TempAlarmActive = 1;
+  WhichThermometerAlarmActive = whichThermometer(deviceAddress);
   turnOnAlarm();
 }
 
@@ -405,11 +427,15 @@ byte whichThermometer(DeviceAddress deviceAddress)
 
 
 
+void timerAlarmHandler()
+{
+  TimerAlarmActive = 1;
+}
 
 // function that will be called when an alarm condition exists during DallasTemperatures::processAlarms();
 void turnOnAlarm()
 {
-  Serial.println("INFO:AlarmOn|1;");
+//  Serial.println("INFO:AlarmOn|1;");
   tone(ALARM_PIN, 262, 100);
   digitalWrite(LED_PIN, HIGH);
 
