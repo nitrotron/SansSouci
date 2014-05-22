@@ -135,6 +135,7 @@ void onReturnStatus()
   onGetTemps();
   onGetSensors();
   onGetTempAlarms();
+  onGetAlarmStatus();
 }
 
 //  Called function to send back all of the temperature probes' temperature
@@ -206,26 +207,26 @@ void onGetSensors()
   {
     if (thermometersActive[i])
     {
-      Serial.print("Thermometer");
+      Serial.print("ThermometerSensor");
       Serial.print(i);
       Serial.print("|");
       for (byte k=0; k < 8; k++)
       {
-        Serial.print(thermometers[i][k], HEX);
+        Serial.print(thermometers[i][k], DEC);
       }
       Serial.print(",");
     }
   }
   if (thermometersActive[i])
     {
-      Serial.print("Thermometer");
+      Serial.print("ThermometerSensor");
       Serial.print(i);
       Serial.print("|");
       for (byte k=0; k < 8; k++)
       {
-        Serial.print(thermometers[i][k], HEX);
+        Serial.print(thermometers[i][k], DEC);
       }
-      Serial.print(",");
+      
     }
   Serial.println(";");
   //cmdMessenger.sendCmdEnd();    
@@ -564,7 +565,7 @@ void setup()
 
   Alarm.timerRepeat(15, thermometerLoopCB);  // processes alarms & thermometers every 15 seconds.
   //Alarm.timerRepeat(sampleInterval, sendDataLogingCB);
-  //Alarm.timerRepeat(15, sendInfoCB);
+  Alarm.timerRepeat(10, onReturnStatus );
   Alarm.timerRepeat(1, processIncomingSerial);
 
 //
