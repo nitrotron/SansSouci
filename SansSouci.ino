@@ -136,6 +136,7 @@ void onReturnStatus()
   onGetSensors();
   onGetTempAlarms();
   onGetAlarmStatus();
+  GetTimerStatus();
 }
 
 //  Called function to send back all of the temperature probes' temperature
@@ -336,12 +337,7 @@ void onSetTimer()
   
 
   AlarmId id = Alarm.timerOnce(minutes * 60, timerAlarmHandler);
-//  
-//  Serial.print("INFO:TimerAlarm");
-//  Serial.print(id);
-//  Serial.print("|");
-//  Serial.print(minutes);
-//  Serial.println(";");
+
 }
 
 void onInterrupt()
@@ -400,9 +396,6 @@ void onSetPIDSetPoint()
 // function that will be called when an alarm condition exists during DallasTemperatures::processAlarms();
 void alarmHandler(uint8_t* deviceAddress)
 {
-//  Serial.print("INFO:TempAlarmTriggerID|");
-//  Serial.print(whichThermometer(deviceAddress));
-//  Serial.println(";");
   TempAlarmActive = 1;
   WhichThermometerAlarmActive = whichThermometer(deviceAddress);
   turnOnAlarm();
@@ -729,6 +722,25 @@ void sendInfoCB()
     Serial.println("===================== Print General Info End =====================");
     Serial.println();
     Serial.println();
+}
+
+void GetTimerStatus()
+{
+	int numAvailable = 0;
+	 for (uint8_t i=0; i < dtNBR_ALARMS; i++)
+	 {
+		dtAlarmPeriod_t alarmPeriodType = Alarm.readType(i);
+		if (alarmPeriodType == dtNotAllocated)
+		{
+		  numAvailable ++;
+		}
+	 }
+	 Serial.print("TimersNotAllocated|");
+	 Serial.print(numAvailable)
+	 Serial.println(";");
+	 Serial.print("TotalTimers|");
+	 Serial.print(dtNBR_ALARMS);
+	 Serial.println(";");
 }
 
 void sendDataLogingCB()
