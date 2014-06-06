@@ -424,6 +424,7 @@ byte whichThermometer(DeviceAddress deviceAddress)
 void timerAlarmHandler()
 {
   TimerAlarmActive = 1;
+  turnOnAlarm();
 }
 
 // function that will be called when an alarm condition exists during DallasTemperatures::processAlarms();
@@ -736,7 +737,7 @@ void GetTimerStatus()
 		}
 	 }
 	 Serial.print("TimersNotAllocated|");
-	 Serial.print(numAvailable)
+	 Serial.print(numAvailable);
 	 Serial.println(";");
 	 Serial.print("TotalTimers|");
 	 Serial.print(dtNBR_ALARMS);
