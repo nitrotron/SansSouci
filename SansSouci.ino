@@ -26,15 +26,16 @@
 
 #define SERIAL_BAUD 9600
 #define NUM_OF_THERMOMETERS 3
-#define THERMO_FILTER_PASS 5;
 
 //Define Pins
-// Data Wire is plugged into port 2 on the Arduino
+#define ALARM_RESET_BUTTON_PIN 2
 #define ONE_WIRE_BUS 4
-#define RelayPin 6
+#define PUMP_PIN 5
+#define SSR_PIN 6
+#define RIMSENABLE_PIN 7
 #define ALARM_PIN 8
 #define LED_PIN 13
-#define ALARM_RESET_BUTTON_PIN 2
+
 
 
 // Setup a oneWire instance to communicate with any OneWire devices (not just Maxim/Dallas temperature ICs)
@@ -51,6 +52,8 @@ bool TempAlarmActive = 0;
 uint8_t  WhichThermometerAlarmActive = 0;
 bool TimerAlarmActive = 0;
 
+bool PumpOn = 0;
+
 
 // Database and time variables
 long startAcqMillis                = 0;
@@ -61,6 +64,9 @@ const unsigned long sampleInterval = 60; // second interval
 //Define Variables we'll be connecting to
 double Setpoint, Input, Output;
 uint8_t rimsThermoNumber = 0;
+int Kp = 2;
+int Ki = 5;
+int Kd = 1;
 
 //Specify the links and initial tuning parameters
 PID myPID(&Input, &Output, &Setpoint,2,5,1, DIRECT);
@@ -92,7 +98,13 @@ enum
     GetAlarmStatus, //13
     StartLogging,//14
     StopLogging,//15
-    SetPIDSetPoint//16
+    SetPIDSetPoint,//16
+	SetPIDWindowSize,//17
+	SetPIDKp,//18
+	SetPIDKi,//19
+	SetPIDKd,//20
+	TurnOnRims, //21
+	TurnOnPump // 22
 };
 
 // Callbacks define on which received commands we take action
@@ -116,8 +128,13 @@ void attachCommandCallbacks()
   cmdMessenger.attach(StartLogging,           onStartLogging);
   cmdMessenger.attach(StopLogging,            onStopLogging);
   cmdMessenger.attach(SetPIDSetPoint,         onSetPIDSetPoint);
-  
- }
+  cmdMessenger.attach(SetPIDWindowSize,       onSetPIDWindowSize);
+  cmdMessenger.attach(SetPIDKp,               onSetPIDKp);
+  cmdMessenger.attach(SetPIDKi,               onSetPIDKi);
+  cmdMessenger.attach(SetPIDKd,				  onSetPIDKd);
+  cmdMessenger.attach(TurnOnRims,			  onTurnOnRims);
+  cmdMessenger.attach(TurnOnPump,			  onTurnOnPump);
+}
 
 
 
@@ -387,11 +404,54 @@ void onStopLogging()
 void onSetPIDSetPoint()
 {
   Setpoint = cmdMessenger.readFloatArg();
-  Serial.print("INFO:SetPIDSetPoint|");
+  Serial.print("INFO:PIDSetPoint|");
   Serial.print(Setpoint);
   Serial.println(";");
 }
+void onSetPIDWindowSize()
+{
+  WindowSize = cmdMessenger.readFloatArg();
+  Serial.print(INFO:PIDWindowSize|");
+  Serial.print(WindowSize);
+  Serial.println(";");
+}
+void onSetPIDKp()
+{
+  Kp = cmdMessenger.readFloatArg();
+  Serial.print(INFO:PIDKp|");
+  Serial.print(Kp);
+  Serial.println(";");
+  myPID.SetTunings(Kp, Ki, Kd);
 
+}
+void onSetPIDKi()
+{
+  Ki = cmdMessenger.readFloatArg();
+  Serial.print(INFO:PIDKi|");
+  Serial.print(Ki);
+  Serial.println(";");
+  myPID.SetTunings(Kp, Ki, Kd);
+}
+
+void onSetPIDKd()
+{
+  Kd = cmdMessenger.readFloatArg();
+  Serial.print(INFO:PIDKd|");
+  Serial.print(Kd);
+  Serial.println(";");
+  myPID.SetTunings(Kp, Ki, Kd);
+}
+
+void onTurnOnRims()
+{
+  RimsEnable = cmdMessenger.readIntArg();
+  digitalWrite(RIMSENABLE_PIN, RimsEnable);
+}
+void onTurnOnPump()
+{
+  PumpOn = cmdMessenger.readIntArg();
+  digitalWrite(PUMP_PIN, PumpOn);
+}
 
 // function that will be called when an alarm condition exists during DallasTemperatures::processAlarms();
 void alarmHandler(uint8_t* deviceAddress)
@@ -434,17 +494,6 @@ void turnOnAlarm()
   tone(ALARM_PIN, 262, 100);
   digitalWrite(LED_PIN, HIGH);
 
-  //AlarmID_t timerID = Alarm.getTriggeredAlarmId();
-  //if (timerID != dtINVALID_ALARM_ID)
-  //{
-  //   Serial.print("TimerAlarm triggered alarm. Timer");
-	// Serial.print(timerID);
-	// Serial.print("");
-	// Serial.println();
-  //}
-  //else
-  //{
-  //}
 }
 
 // function that will be called when an alarm condition exists during DallasTemperatures::processAlarms();
@@ -470,101 +519,6 @@ void turnOffAlarm()
 }
 
 
-// ------------------ M A I N  ----------------------
-
-// Setup function
-void setup() 
-{
-  pinMode(LED_PIN, OUTPUT);
-    
-  tone(ALARM_PIN, 262, 100);
-  attachInterrupt(0, onInterrupt, RISING);
-  
-  String debugMessage;
-
-  // Listen on serial connection for messages from the pc
-  Serial.begin(SERIAL_BAUD); 
-
-
-  // ----------- CMD MESSENGER -----------------------
-  // Adds newline to every command
-  cmdMessenger.printLfCr();   
-
-  // Attach my application's user-defined callback methods
-  attachCommandCallbacks();
-
-  // ----------- DALLAS ONE WIRE----------------------
-  // start up the library 
-  sensors.begin();
-
-  //locate devices on the bus, print out the # of thermometers
-
-//  Serial.print("DEBUG:Arduino has started ");
-//  
-//  debugMessage = String("Found ");
-//  debugMessage += String(sensors.getDeviceCount());
-//  debugMessage += String(" Thermometers.");
-//  Serial.print(debugMessage);
-//  Serial.println();
-
-  
- 
-
-  // search for devices on the bus and assign based on an index.
-  for (byte i=0; i < NUM_OF_THERMOMETERS; i++)
-  {
-    thermometersActive[i] = true;
-    if (!sensors.getAddress(thermometers[i], i)) 
-	{
-	  Serial.print("Unable to find address for Device "); 
-	  Serial.print(i);
-	  Serial.println();
-      thermometersActive[i] = false;
-	  continue;
-	}
-    
-
-    // show the addresses we found on the bus
-//    Serial.print("Device:"); 
-//    Serial.print(i);
-//    printAddress(thermometers[i]);
-//    Serial.print(" Address");
-//    Serial.println();
-//   
-//    Serial.print("Device"); 
-//    Serial.print(i);
-//    printAlarms(thermometers[i]);
-//    Serial.print(" Alarms");
-//    Serial.println();
-//    
-//    
-//    Serial.println("Setting alarm temps...");
-//   
-    // alarm when temp is higher than max
-    sensors.setHighAlarmTemp(thermometers[i], 125);
-    
-    // alarm when temp is lower than min
-    sensors.setLowAlarmTemp(thermometers[i], -10);
-    
-    
-//    Serial.print("New Device N Alarms: ");
-//    printAlarms(thermometers[i]);
-//    Serial.println();
-    sensors.setAlarmHandler(&alarmHandler);
-    
-    
-  } // for
-  
-  //setupPID();
-
-  Alarm.timerRepeat(15, thermometerLoopCB);  // processes alarms & thermometers every 15 seconds.
-  //Alarm.timerRepeat(sampleInterval, sendDataLogingCB);
-  Alarm.timerRepeat(10, onReturnStatus );
-  Alarm.timerRepeat(1, processIncomingSerial);
-
-//
-//  Serial.println(";");
-}
 
 // function to print a device address
 void printAddress(DeviceAddress deviceAddress)
@@ -789,31 +743,23 @@ void  printDTNotAllocated(uint8_t timer)
 void  printDTTimer(uint8_t timer)
 {
   time_t alarmTime = Alarm.read(timer);
-  //time_t nextTrigger = Alarm.getDigitsNow(dtSecond);
-  //nextTrigger = alarmTime - nextTrigger;
+  
   Serial.print("INFO: Timer"); 
   Serial.print(timer);
   Serial.print(" set to:");
 
   Serial.print(alarmTime);
-  //Serial.print(";");
-  //Serial.print(" Next Trigger:");
-  //Serial.print(nextTrigger);
   Serial.println();
 }
 void  printDTAlarm(uint8_t timer)
 {
   time_t alarmTime = Alarm.read(timer);
-  //time_t nextTrigger = Alarm.getDigitsNow(dtSecond);
-  //nextTrigger = alarmTime - nextTrigger;
+  
   Serial.print("INFO: Alarm"); 
   Serial.print(timer);
   Serial.print(" set to:");
 
   Serial.print(alarmTime);
-  //Serial.print(";");
-  //Serial.print(" Next Trigger:");
-  //Serial.print(nextTrigger);
   Serial.println();
 }
 
@@ -823,7 +769,83 @@ void processIncomingSerial()
 	cmdMessenger.feedinSerialData(); 
 }
 
-// Loop function
+
+// --------------------------------------------------
+// ------------------ M A I N  ----------------------
+// --------------------------------------------------
+// ------------------- Setup ------------------------
+
+// Setup function
+void setup() 
+{
+  pinMode(LED_PIN, OUTPUT);
+  pinMode(PUMP_PIN, OUTPUT);
+  pinMode(SSR_PIN, OUTPUT);
+  pinMode(RIMSENABLE_PIN, OUTPUT);
+    
+  tone(ALARM_PIN, 262, 100);
+  attachInterrupt(0, onInterrupt, RISING);
+  
+  String debugMessage;
+
+  // Listen on serial connection for messages from the pc
+  Serial.begin(SERIAL_BAUD); 
+
+
+  // ----------- CMD MESSENGER -----------------------
+  // Adds newline to every command
+  cmdMessenger.printLfCr();   
+
+  // Attach my application's user-defined callback methods
+  attachCommandCallbacks();
+
+
+  // ----------- DALLAS ONE WIRE----------------------
+  // start up the library 
+  sensors.begin();
+
+  
+   
+
+  // search for temperature devices on the bus, initialize their alarms
+  for (byte i=0; i < NUM_OF_THERMOMETERS; i++)
+  {
+    thermometersActive[i] = true;
+    if (!sensors.getAddress(thermometers[i], i)) 
+	{
+	  Serial.print("Unable to find address for Device "); 
+	  Serial.print(i);
+	  Serial.println();
+      thermometersActive[i] = false;
+	  continue;
+	}
+    
+
+    // alarm when temp is higher than max
+    sensors.setHighAlarmTemp(thermometers[i], 125);
+    
+    // alarm when temp is lower than min
+    sensors.setLowAlarmTemp(thermometers[i], -10);
+
+	// alarmHandler() will get called when a thermometer low/high alarm
+	// is met.
+    sensors.setAlarmHandler(&alarmHandler);
+    
+    
+  } // for
+  
+  //setupPID();
+
+  Alarm.timerRepeat(15, thermometerLoopCB);  // processes alarms & thermometers every 15 seconds.
+  //Alarm.timerRepeat(sampleInterval, sendDataLogingCB);
+  Alarm.timerRepeat(10, onReturnStatus );
+  Alarm.timerRepeat(1, processIncomingSerial);
+
+}
+
+// -------------------------------------------------
+// ------------------- Loop ------------------------
+// -------------------------------------------------
 void loop() 
 {
 
@@ -841,8 +863,8 @@ void loop()
 //  { //time to shift the Relay Window
 //    windowStartTime += WindowSize;
 //  }
-//  if(Output < millis() - windowStartTime) digitalWrite(RelayPin,HIGH);
-//  else digitalWrite(RelayPin,LOW);
+//  if(Output < millis() - windowStartTime) digitalWrite(SSR_PIN,HIGH);
+//  else digitalWrite(SSR_PIN,LOW);
 
   Alarm.delay(1);
 } 
