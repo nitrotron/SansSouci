@@ -53,6 +53,7 @@ uint8_t  WhichThermometerAlarmActive = 0;
 bool TimerAlarmActive = 0;
 
 bool PumpOn = 0;
+bool RimsEnable = 0;
 
 
 // Database and time variables
@@ -411,14 +412,14 @@ void onSetPIDSetPoint()
 void onSetPIDWindowSize()
 {
   WindowSize = cmdMessenger.readFloatArg();
-  Serial.print(INFO:PIDWindowSize|");
+  Serial.print("INFO:PIDWindowSize|");
   Serial.print(WindowSize);
   Serial.println(";");
 }
 void onSetPIDKp()
 {
   Kp = cmdMessenger.readFloatArg();
-  Serial.print(INFO:PIDKp|");
+  Serial.print("INFO:PIDKp|");
   Serial.print(Kp);
   Serial.println(";");
   myPID.SetTunings(Kp, Ki, Kd);
@@ -427,7 +428,7 @@ void onSetPIDKp()
 void onSetPIDKi()
 {
   Ki = cmdMessenger.readFloatArg();
-  Serial.print(INFO:PIDKi|");
+  Serial.print("INFO:PIDKi|");
   Serial.print(Ki);
   Serial.println(";");
   myPID.SetTunings(Kp, Ki, Kd);
@@ -436,7 +437,7 @@ void onSetPIDKi()
 void onSetPIDKd()
 {
   Kd = cmdMessenger.readFloatArg();
-  Serial.print(INFO:PIDKd|");
+  Serial.print("INFO:PIDKd|");
   Serial.print(Kd);
   Serial.println(";");
   myPID.SetTunings(Kp, Ki, Kd);
