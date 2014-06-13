@@ -27,6 +27,10 @@
 #define SERIAL_BAUD 9600
 #define NUM_OF_THERMOMETERS 3
 
+//For the interrupt and debouncing
+long debouncing_time = 15; //Debouncing Time in Milliseconds
+volatile unsigned long last_micros;
+
 //Define Pins
 #define ALARM_RESET_BUTTON_PIN 2
 #define ONE_WIRE_BUS 4
@@ -34,9 +38,9 @@
 #define SSR_PIN 6
 #define RIMSENABLE_PIN 7
 #define ALARM_PIN 8
+#define TIMER_ALARM_HW_ENABLED 11
+#define TEMP_ALARM_HW_ENABLED 12
 #define LED_PIN 13
-
-
 
 // Setup a oneWire instance to communicate with any OneWire devices (not just Maxim/Dallas temperature ICs)
 OneWire oneWire(ONE_WIRE_BUS);
@@ -358,10 +362,13 @@ void onSetTimer()
 
 }
 
+
 void onInterrupt()
 {
-//  Serial.println("got an interrrupt;");
-  onResetAlarm();
+  if((long)(micros() - last_micros) >= debouncing_time * 1000) {
+    onResetAlarm();
+    last_micros = micros();
+  }
 }
 
 
@@ -459,7 +466,12 @@ void alarmHandler(uint8_t* deviceAddress)
 {
   TempAlarmActive = 1;
   WhichThermometerAlarmActive = whichThermometer(deviceAddress);
-  turnOnAlarm();
+  int alarmEn = digitalRead(TEMP_ALARM_HW_ENABLED);
+  if (alarmEn == 1)
+  {
+    turnOnAlarm();
+  }
+
 }
 
 byte whichThermometer(DeviceAddress deviceAddress)
@@ -485,7 +497,11 @@ byte whichThermometer(DeviceAddress deviceAddress)
 void timerAlarmHandler()
 {
   TimerAlarmActive = 1;
-  turnOnAlarm();
+  int alarmEn = digitalRead(TIMER_ALARM_HW_ENABLED);
+  if (alarmEn == 1)
+  {
+    turnOnAlarm();
+  }
 }
 
 // function that will be called when an alarm condition exists during DallasTemperatures::processAlarms();
@@ -783,6 +799,9 @@ void setup()
   pinMode(PUMP_PIN, OUTPUT);
   pinMode(SSR_PIN, OUTPUT);
   pinMode(RIMSENABLE_PIN, OUTPUT);
+  
+  pinMode(TIMER_ALARM_HW_ENABLED,INPUT);
+  pinMode(TEMP_ALARM_HW_ENABLED,INPUT);
     
   tone(ALARM_PIN, 262, 100);
   attachInterrupt(0, onInterrupt, RISING);
