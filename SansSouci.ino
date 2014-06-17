@@ -33,6 +33,7 @@ volatile unsigned long last_micros;
 
 //Define Pins
 #define ALARM_RESET_BUTTON_PIN 2
+#define AUX_PIN 3
 #define ONE_WIRE_BUS 4
 #define PUMP_PIN 5
 #define SSR_PIN 6
@@ -56,6 +57,7 @@ bool TempAlarmActive = 0;
 uint8_t  WhichThermometerAlarmActive = 0;
 bool TimerAlarmActive = 0;
 
+bool AuxOn = 0;
 bool PumpOn = 0;
 bool RimsEnable = 0;
 
@@ -109,7 +111,8 @@ enum
 	SetPIDKi,//19
 	SetPIDKd,//20
 	TurnOnRims, //21
-	TurnOnPump // 22
+	TurnOnPump, // 22
+	TurnOnAux  //23
 };
 
 // Callbacks define on which received commands we take action
@@ -139,6 +142,7 @@ void attachCommandCallbacks()
   cmdMessenger.attach(SetPIDKd,				  onSetPIDKd);
   cmdMessenger.attach(TurnOnRims,			  onTurnOnRims);
   cmdMessenger.attach(TurnOnPump,			  onTurnOnPump);
+  cmdMessenger.attach(TurnOnAux,			  onTurnOnAux);
 }
 
 
@@ -159,6 +163,17 @@ void onReturnStatus()
   onGetTempAlarms();
   onGetAlarmStatus();
   GetTimerStatus();
+  Serial.print("PumpOn|");
+  Serial.print(PumpOn);
+  Serial.println(";");
+  Serial.print("AuxOn|");
+  Serial.print(AuxOn);
+  Serial.println(";");
+  Serial.print("RimsEnable|");
+  Serial.print(RimsEnable);
+  Serial.println(";");
+  
+
 }
 
 //  Called function to send back all of the temperature probes' temperature
@@ -459,6 +474,11 @@ void onTurnOnPump()
 {
   PumpOn = cmdMessenger.readIntArg();
   digitalWrite(PUMP_PIN, PumpOn);
+}
+void onTurnOnAux()
+{
+  AuxOn = cmdMessenger.readIntArg();
+  digitalWrite(AUX_PIN, AuxOn);
 }
 
 // function that will be called when an alarm condition exists during DallasTemperatures::processAlarms();
