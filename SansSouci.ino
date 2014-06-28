@@ -112,7 +112,8 @@ enum
 	SetPIDKd,//20
 	TurnOnRims, //21
 	TurnOnPump, // 22
-	TurnOnAux  //23
+	TurnOnAux,  //23
+	SetInitialClock //24
 };
 
 // Callbacks define on which received commands we take action
@@ -143,6 +144,7 @@ void attachCommandCallbacks()
   cmdMessenger.attach(TurnOnRims,			  onTurnOnRims);
   cmdMessenger.attach(TurnOnPump,			  onTurnOnPump);
   cmdMessenger.attach(TurnOnAux,			  onTurnOnAux);
+  cmdMessenger.attach(SetInitialClock,		  onSetInitialClock);
 }
 
 
@@ -480,6 +482,17 @@ void onTurnOnAux()
   AuxOn = cmdMessenger.readIntArg();
   digitalWrite(AUX_PIN, AuxOn);
 }
+void onSetInitialClock()
+{
+   byte hr = cmdMessenger.readIntArg();
+   byte min = cmdMessenger.readIntArg();
+   byte sec = cmdMessenger.readIntArg();
+   byte month = cmdMessenger.readIntArg();
+   byte day = cmdMessenger.readIntArg();
+   byte yr = cmdMessenger.readIntArg();
+
+  setTime(hr,min,sec,day,month,yr); // set time to Saturday 8:29:00am Jan 1 2011
+}
 
 // function that will be called when an alarm condition exists during DallasTemperatures::processAlarms();
 void alarmHandler(uint8_t* deviceAddress)
@@ -725,6 +738,16 @@ void GetTimerStatus()
 		if (alarmPeriodType == dtNotAllocated)
 		{
 		  numAvailable ++;
+		}
+		else if (alarmPeriodType == dtTimer)
+		{
+		   Serial.print("Timer");
+		   Serial.print(i);
+		   Serial.print("|");
+		   /* need to put this into some datetime format */
+		   Serial.print(Alarm.read(i));
+
+		   Serial.println(";");
 		}
 	 }
 	 Serial.print("TimersNotAllocated|");
