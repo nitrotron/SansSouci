@@ -174,6 +174,9 @@ void onReturnStatus()
   Serial.print("RimsEnable|");
   Serial.print(RimsEnable);
   Serial.println(";");
+  Serial.print("ArduinoTime|");
+  Serial.print(now());
+  Serial.println(";");
   
 
 }
@@ -732,21 +735,30 @@ void sendInfoCB()
 void GetTimerStatus()
 {
 	int numAvailable = 0;
+	time_t alarmTime;
 	 for (uint8_t i=0; i < dtNBR_ALARMS; i++)
 	 {
 		dtAlarmPeriod_t alarmPeriodType = Alarm.readType(i);
+
 		if (alarmPeriodType == dtNotAllocated)
 		{
 		  numAvailable ++;
 		}
-		else if (alarmPeriodType == dtTimer)
+		else if (alarmPeriodType == dtTimer && Alarm.isOneShotType(i) == 1)
 		{
-		   Serial.print("Timer");
+		   alarmTime = Alarm.getNextTrigger(i); 
+		   Serial.print("TimerHour");
 		   Serial.print(i);
 		   Serial.print("|");
-		   /* need to put this into some datetime format */
-		   Serial.print(Alarm.read(i));
-
+		   Serial.print(hour(alarmTime));
+           Serial.print(",TimerMin");
+		   Serial.print(i);
+		   Serial.print("|");
+		   Serial.print(minute(alarmTime));
+		   Serial.print(",TimerSec");
+		   Serial.print(i);
+		   Serial.print("|");
+		   Serial.print(second(alarmTime));
 		   Serial.println(";");
 		}
 	 }
