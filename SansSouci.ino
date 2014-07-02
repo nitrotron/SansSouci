@@ -747,17 +747,13 @@ void GetTimerStatus()
 		else if (alarmPeriodType == dtTimer && Alarm.isOneShotType(i) == 1)
 		{
 		   alarmTime = Alarm.getNextTrigger(i); 
-		   Serial.print("TimerHour");
+		   Serial.print("Timer");
 		   Serial.print(i);
 		   Serial.print("|");
 		   Serial.print(hour(alarmTime));
-           Serial.print(",TimerMin");
-		   Serial.print(i);
-		   Serial.print("|");
+           Serial.print(":");
 		   Serial.print(minute(alarmTime));
-		   Serial.print(",TimerSec");
-		   Serial.print(i);
-		   Serial.print("|");
+		   Serial.print(":");
 		   Serial.print(second(alarmTime));
 		   Serial.println(";");
 		}
