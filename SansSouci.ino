@@ -217,7 +217,7 @@ void onGetTemp()
   byte i = cmdMessenger.readIntArg();
   //cmdMessenger.sendCmdStart(ReturnTemps);
   
-  Serial.print("INFO:");
+  Serial.print("INFO@");
   if (thermometersActive[i])
   {
       Serial.print("Thermometer");
@@ -244,7 +244,7 @@ void onGetTemp()
 // Called function to send back specific temperature probe's temperature
 void onGetSensors()
 {
-  Serial.print("INFO:");
+  Serial.print("INFO@");
   byte i;
   for (i = 0; i< NUM_OF_THERMOMETERS -1 ;i ++)
   {
@@ -280,7 +280,7 @@ void onGetSensor()
   byte i = cmdMessenger.readIntArg();
 
   //cmdMessenger.sendCmdStart(ReturnSensors);
-  Serial.print("INFO:");
+  Serial.print("INFO@");
   if (thermometersActive[i])
   {
     Serial.print("Thermometer");
@@ -300,7 +300,7 @@ void onGetSensor()
 // Called function to send back specific temperature probe's temperature
 void onGetTempAlarms()
 {
-   Serial.print("INFO:");
+   Serial.print("INFO@");
    byte i;
    for (i = 0; i< NUM_OF_THERMOMETERS -1 ;i ++)
    {
@@ -365,7 +365,7 @@ void onGetTimer()
   AlarmID_t id = cmdMessenger.readIntArg(); 
   time_t minutes = Alarm.read(id);
   
-  Serial.print("INFO:TimerAlarm");
+  Serial.print("INFO@TimerAlarm");
   Serial.print(id);
   Serial.print("|");
   Serial.print(minutes);
@@ -400,12 +400,12 @@ void onResetAlarm()
   WhichThermometerAlarmActive = 0;
   TimerAlarmActive = 0;
 
-//  Serial.println("INFO:AlarmOn|0;");
+//  Serial.println("INFO@AlarmOn|0;");
 }
 
 void onGetAlarmStatus()
 {
-  Serial.print("INFO:TempAlarmActive|");
+  Serial.print("INFO@TempAlarmActive|");
   Serial.print(TempAlarmActive);
   Serial.print(",TimerAlarmActive|");
   Serial.print(TimerAlarmActive);
@@ -419,34 +419,34 @@ void onStartLogging()
   // Start data acquisition
   startAcqMillis = millis();
   acquireData    = true;
-  Serial.println("INFO:StartLogging");
+  Serial.println("INFO@StartLogging");
 }
 
 void onStopLogging()
 {
   // Stop data acquisition
   acquireData    = false;
-  Serial.println("INFO: StopLogging");
+  Serial.println("INFO@ StopLogging");
 }
 
 void onSetPIDSetPoint()
 {
   Setpoint = cmdMessenger.readFloatArg();
-  Serial.print("INFO:PIDSetPoint|");
+  Serial.print("INFO@PIDSetPoint|");
   Serial.print(Setpoint);
   Serial.println(";");
 }
 void onSetPIDWindowSize()
 {
   WindowSize = cmdMessenger.readFloatArg();
-  Serial.print("INFO:PIDWindowSize|");
+  Serial.print("INFO@PIDWindowSize|");
   Serial.print(WindowSize);
   Serial.println(";");
 }
 void onSetPIDKp()
 {
   Kp = cmdMessenger.readFloatArg();
-  Serial.print("INFO:PIDKp|");
+  Serial.print("INFO@PIDKp|");
   Serial.print(Kp);
   Serial.println(";");
   myPID.SetTunings(Kp, Ki, Kd);
@@ -455,7 +455,7 @@ void onSetPIDKp()
 void onSetPIDKi()
 {
   Ki = cmdMessenger.readFloatArg();
-  Serial.print("INFO:PIDKi|");
+  Serial.print("INFO@PIDKi|");
   Serial.print(Ki);
   Serial.println(";");
   myPID.SetTunings(Kp, Ki, Kd);
@@ -464,7 +464,7 @@ void onSetPIDKi()
 void onSetPIDKd()
 {
   Kd = cmdMessenger.readFloatArg();
-  Serial.print("INFO:PIDKd|");
+  Serial.print("INFO@PIDKd|");
   Serial.print(Kd);
   Serial.println(";");
   myPID.SetTunings(Kp, Ki, Kd);
@@ -543,7 +543,7 @@ void timerAlarmHandler()
 // function that will be called when an alarm condition exists during DallasTemperatures::processAlarms();
 void turnOnAlarm()
 {
-//  Serial.println("INFO:AlarmOn|1;");
+//  Serial.println("INFO@AlarmOn|1;");
   tone(ALARM_PIN, 262, 100);
   digitalWrite(LED_PIN, HIGH);
 
@@ -775,7 +775,7 @@ void sendDataLogingCB()
       float tempF = sensors.getTempF(thermometers[i]);
 	  if (tempF != DEVICE_DISCONNECTED)
 	  {
-	    Serial.print("DB_WRITE:Device|");
+	    Serial.print("DB_WRITE@Device|");
 	    Serial.print(i);
 	    Serial.print(",Temperature|");
 	    Serial.print(tempF);
@@ -791,7 +791,7 @@ void printTimerNextTrigger()
   time_t nextTrigger = Alarm.getNextTrigger();
   time_t nowT = Alarm.getDigitsNow(dtSecond);
   time_t whenTrigger = nextTrigger - nowT;
-  Serial.print("INFO: The next Timer/Alarm to trigger is in ");
+  Serial.print("INFO@ The next Timer/Alarm to trigger is in ");
   Serial.print(whenTrigger);
   Serial.print(" seconds;");
   Serial.print(" Now=");
@@ -803,7 +803,7 @@ void printTimerNextTrigger()
 
 void  printDTNotAllocated(uint8_t timer)
 {
-  Serial.print("INFO: Timer/Alarm"); 
+  Serial.print("INFO@ Timer/Alarm"); 
   Serial.print(timer);
   Serial.print(" not allocated");
   Serial.println();
@@ -812,7 +812,7 @@ void  printDTTimer(uint8_t timer)
 {
   time_t alarmTime = Alarm.read(timer);
   
-  Serial.print("INFO: Timer"); 
+  Serial.print("INFO@ Timer"); 
   Serial.print(timer);
   Serial.print(" set to:");
 
@@ -823,7 +823,7 @@ void  printDTAlarm(uint8_t timer)
 {
   time_t alarmTime = Alarm.read(timer);
   
-  Serial.print("INFO: Alarm"); 
+  Serial.print("INFO@ Alarm"); 
   Serial.print(timer);
   Serial.print(" set to:");
 
