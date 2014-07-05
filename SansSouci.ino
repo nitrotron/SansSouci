@@ -736,6 +736,7 @@ void GetTimerStatus()
 {
 	int numAvailable = 0;
 	time_t alarmTime;
+        Serial.println("ClearTimers|1;");
 	 for (uint8_t i=0; i < dtNBR_ALARMS; i++)
 	 {
 		dtAlarmPeriod_t alarmPeriodType = Alarm.readType(i);
