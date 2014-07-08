@@ -906,9 +906,9 @@ void setup()
     
   } // for
   
-  //setupPID();
+  setupPID();
 
-  Alarm.timerRepeat(15, thermometerLoopCB);  // processes alarms & thermometers every 15 seconds.
+  //Alarm.timerRepeat(1, thermometerLoopCB);  // processes alarms & thermometers every 15 seconds.
   //Alarm.timerRepeat(sampleInterval, sendDataLogingCB);
   Alarm.timerRepeat(10, onReturnStatus );
   Alarm.timerRepeat(1, processIncomingSerial);
@@ -921,22 +921,23 @@ void setup()
 void loop() 
 {
 
-
+   thermometerLoopCB();
   //if (sensors.requestTemperaturesByIndex(rimsThermoNumber))
   //{
-  //  Input = sensors.getTempFByIndex(0);
-  //  myPID.Compute();
+    //Input = sensors.getTempFByIndex(rimsThermoNumber);
+    Input = sensors.getTempF(thermometers[rimsThermoNumber]);
+    myPID.Compute();
   //}
 
   /************************************************
    * turn the output pin on/off based on pid output
    ************************************************/
-//  if(millis() - windowStartTime>WindowSize)
-//  { //time to shift the Relay Window
-//    windowStartTime += WindowSize;
-//  }
-//  if(Output < millis() - windowStartTime) digitalWrite(SSR_PIN,HIGH);
-//  else digitalWrite(SSR_PIN,LOW);
+  if(millis() - windowStartTime>WindowSize)
+  { //time to shift the Relay Window
+    windowStartTime += WindowSize;
+  }
+  if(Output < millis() - windowStartTime) digitalWrite(SSR_PIN,HIGH);
+  else digitalWrite(SSR_PIN,LOW);
 
-  Alarm.delay(1);
+  Alarm.delay(125);
 } 
