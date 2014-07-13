@@ -177,6 +177,17 @@ void onReturnStatus()
   Serial.print("ArduinoTime|");
   Serial.print(now());
   Serial.println(";");
+  Serial.print("ArduinoTimeLong|");
+  Serial.print(hour());
+  printDigits(minute());
+  printDigits(second());
+  Serial.print(" ");
+  Serial.print(day());
+  Serial.print("/");
+  Serial.print(month());
+  Serial.print("/");
+  Serial.print(year()); 
+  Serial.println(";"); 
   Serial.print("SetPoint|");
   Serial.print(SetPoint);
   Serial.print(";");
@@ -193,8 +204,15 @@ void onReturnStatus()
   Serial.print(Kd);
   Serial.print(";");
 
-  
+}
 
+
+void printDigits(int digits){
+  // utility function for digital clock display: prints preceding colon and leading 0
+  Serial.print(":");
+  if(digits < 10)
+    Serial.print('0');
+  Serial.print(digits);
 }
 
 //  Called function to send back all of the temperature probes' temperature
@@ -893,8 +911,6 @@ void setup()
   sensors.begin();
 
   
-   
-
   // search for temperature devices on the bus, initialize their alarms
   for (byte i=0; i < NUM_OF_THERMOMETERS; i++)
   {
