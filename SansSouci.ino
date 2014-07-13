@@ -69,14 +69,14 @@ const unsigned long sampleInterval = 60; // second interval
 
 //RIMS & PID variables
 //Define Variables we'll be connecting to
-double Setpoint, Input, Output;
+double SetPoint, Input, Output;
 uint8_t rimsThermoNumber = 0;
 int Kp = 2;
 int Ki = 5;
 int Kd = 1;
 
 //Specify the links and initial tuning parameters
-PID myPID(&Input, &Output, &Setpoint,2,5,1, DIRECT);
+PID myPID(&Input, &Output, &SetPoint,2,5,1, DIRECT);
 
 int WindowSize = 5000;
 unsigned long windowStartTime;
@@ -177,6 +177,22 @@ void onReturnStatus()
   Serial.print("ArduinoTime|");
   Serial.print(now());
   Serial.println(";");
+  Serial.print("SetPoint|");
+  Serial.print(SetPoint);
+  Serial.print(";");
+  Serial.print("WindowSize|");
+  Serial.print(WindowSize);
+  Serial.print(";");
+  Serial.print("Kp|");
+  Serial.print(Kp);
+  Serial.print(";");
+  Serial.print("Ki|");
+  Serial.print(Ki);
+  Serial.print(";");
+  Serial.print("Kd|");
+  Serial.print(Kd);
+  Serial.print(";");
+
   
 
 }
@@ -431,9 +447,9 @@ void onStopLogging()
 
 void onSetPIDSetPoint()
 {
-  Setpoint = cmdMessenger.readFloatArg();
+  SetPoint = cmdMessenger.readFloatArg();
   Serial.print("INFO@PIDSetPoint|");
-  Serial.print(Setpoint);
+  Serial.print(SetPoint);
   Serial.println(";");
 }
 void onSetPIDWindowSize()
@@ -562,7 +578,7 @@ void turnOffAlarm()
   windowStartTime = millis();
   
   //initialize the variables we're linked to
-  Setpoint = 100;
+  SetPoint = 100;
 
   //tell the PID to range between 0 and the full window size
   myPID.SetOutputLimits(0, WindowSize);
