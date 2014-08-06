@@ -512,12 +512,13 @@ void onTurnOnRims()
 void onTurnOnPump()
 {
   PumpOn = cmdMessenger.readIntArg();
-  digitalWrite(PUMP_PIN, PumpOn);
+  
+  digitalWrite(PUMP_PIN, !PumpOn);
 }
 void onTurnOnAux()
 {
   AuxOn = cmdMessenger.readIntArg();
-  digitalWrite(AUX_PIN, AuxOn);
+  digitalWrite(AUX_PIN, !AuxOn);
 }
 void onSetInitialClock()
 {
@@ -537,7 +538,7 @@ void alarmHandler(uint8_t* deviceAddress)
   TempAlarmActive = 1;
   WhichThermometerAlarmActive = whichThermometer(deviceAddress);
   int alarmEn = digitalRead(TEMP_ALARM_HW_ENABLED);
-  if (alarmEn == 1)
+//  if (alarmEn == 1)
   {
     turnOnAlarm();
   }
@@ -568,7 +569,7 @@ void timerAlarmHandler()
 {
   TimerAlarmActive = 1;
   int alarmEn = digitalRead(TIMER_ALARM_HW_ENABLED);
-  if (alarmEn == 1)
+//    if (alarmEn == 1)
   {
     turnOnAlarm();
   }
@@ -578,7 +579,8 @@ void timerAlarmHandler()
 void turnOnAlarm()
 {
 //  Serial.println("INFO@AlarmOn|1;");
-  tone(ALARM_PIN, 262, 100);
+  //tone(ALARM_PIN, 262, 100);
+  digitalWrite(ALARM_PIN, LOW);
   digitalWrite(LED_PIN, HIGH);
 
 }
@@ -587,7 +589,8 @@ void turnOnAlarm()
 void turnOffAlarm()
 {
 
-  noTone(ALARM_PIN);
+  //noTone(ALARM_PIN);
+  digitalWrite(ALARM_PIN, HIGH);
   digitalWrite(LED_PIN, LOW);
 }
  
@@ -882,14 +885,21 @@ void processIncomingSerial()
 void setup() 
 {
   pinMode(LED_PIN, OUTPUT);
+  digitalWrite(PUMP_PIN, HIGH);
+  digitalWrite(AUX_PIN, HIGH);
   pinMode(PUMP_PIN, OUTPUT);
+  pinMode(AUX_PIN, OUTPUT);
+
+  
   pinMode(SSR_PIN, OUTPUT);
   pinMode(RIMSENABLE_PIN, OUTPUT);
   
   pinMode(TIMER_ALARM_HW_ENABLED,INPUT);
   pinMode(TEMP_ALARM_HW_ENABLED,INPUT);
     
-  tone(ALARM_PIN, 262, 100);
+  //tone(ALARM_PIN, 262, 100);
+  digitalWrite(ALARM_PIN, HIGH);
+  pinMode(ALARM_PIN, OUTPUT);
   attachInterrupt(0, onInterrupt, RISING);
   
   String debugMessage;
@@ -954,22 +964,25 @@ void loop()
 {
 
    thermometerLoopCB();
-  //if (sensors.requestTemperaturesByIndex(rimsThermoNumber))
-  //{
-    //Input = sensors.getTempFByIndex(rimsThermoNumber);
-    Input = sensors.getTempF(thermometers[rimsThermoNumber]);
-    myPID.Compute();
-  //}
+   
+   if (RimsEnable)
+   {
+    //if (sensors.requestTemperaturesByIndex(rimsThermoNumber))
+    //{
+      //Input = sensors.getTempFByIndex(rimsThermoNumber);
+      Input = sensors.getTempF(thermometers[rimsThermoNumber]);
+      myPID.Compute();
+    //}
 
-  /************************************************
-   * turn the output pin on/off based on pid output
-   ************************************************/
-  if(millis() - windowStartTime>WindowSize)
-  { //time to shift the Relay Window
-    windowStartTime += WindowSize;
+    /************************************************
+     * turn the output pin on/off based on pid output
+     ************************************************/
+    if(millis() - windowStartTime>WindowSize)
+    { //time to shift the Relay Window
+      windowStartTime += WindowSize;
+    }
+    if(Output < millis() - windowStartTime) digitalWrite(SSR_PIN,HIGH);
+    else digitalWrite(SSR_PIN,LOW);
   }
-  if(Output < millis() - windowStartTime) digitalWrite(SSR_PIN,HIGH);
-  else digitalWrite(SSR_PIN,LOW);
-
   Alarm.delay(125);
 } 
