@@ -106,14 +106,14 @@ enum
     StartLogging,//14
     StopLogging,//15
     SetPIDSetPoint,//16
-	SetPIDWindowSize,//17
-	SetPIDKp,//18
-	SetPIDKi,//19
-	SetPIDKd,//20
-	TurnOnRims, //21
-	TurnOnPump, // 22
-	TurnOnAux,  //23
-	SetInitialClock //24
+    SetPIDWindowSize,//17
+    SetPIDKp,//18
+    SetPIDKi,//19
+    SetPIDKd,//20
+    TurnOnRims, //21
+    TurnOnPump, // 22
+    TurnOnAux,  //23
+    SetInitialClock //24
 };
 
 // Callbacks define on which received commands we take action
@@ -741,33 +741,33 @@ void thermometerLoopCB()
   sensors.processAlarms();
 }
 
-void sendInfoCB()
-{
-    Serial.println();
-    Serial.println();
-    Serial.println("===================== Print General Info Begin =====================");
-	for (byte i=0; i < NUM_OF_THERMOMETERS; i++)
-     {
-       if (thermometersActive[i])
-         printCurrentTemp(thermometers[i]);
-     }
-
-	 printTimerNextTrigger();
-
-	 for (uint8_t i=0; i < dtNBR_ALARMS; i++)
-	 {
-		dtAlarmPeriod_t alarmPeriodType = Alarm.readType(i);
-		if (alarmPeriodType == dtNotAllocated)
-		  printDTNotAllocated(i);
-		else if (alarmPeriodType == dtTimer)
-		  printDTTimer(i);
-	    else
-		  printDTAlarm(i);
-	 }
-    Serial.println("===================== Print General Info End =====================");
-    Serial.println();
-    Serial.println();
-}
+//void sendInfoCB()
+//{
+//    Serial.println();
+//    Serial.println();
+//    Serial.println("===================== Print General Info Begin =====================");
+//	for (byte i=0; i < NUM_OF_THERMOMETERS; i++)
+//     {
+//       if (thermometersActive[i])
+//         printCurrentTemp(thermometers[i]);
+//     }
+//
+//	 printTimerNextTrigger();
+//
+//	 for (uint8_t i=0; i < dtNBR_ALARMS; i++)
+//	 {
+//		dtAlarmPeriod_t alarmPeriodType = Alarm.readType(i);
+//		if (alarmPeriodType == dtNotAllocated)
+//		  printDTNotAllocated(i);
+//		else if (alarmPeriodType == dtTimer)
+//		  printDTTimer(i);
+//	    else
+//		  printDTAlarm(i);
+//	 }
+//    Serial.println("===================== Print General Info End =====================");
+//    Serial.println();
+//    Serial.println();
+//}
 
 void GetTimerStatus()
 {
@@ -804,70 +804,70 @@ void GetTimerStatus()
 	 Serial.println(";");
 }
 
-void sendDataLogingCB()
-{
-  if (acquireData)
-  {
-    for (byte i=0; i < NUM_OF_THERMOMETERS; i++)
-    {
-      float tempF = sensors.getTempF(thermometers[i]);
-	  if (tempF != DEVICE_DISCONNECTED)
-	  {
-	    Serial.print("DB_WRITE@Device|");
-	    Serial.print(i);
-	    Serial.print(",Temperature|");
-	    Serial.print(tempF);
-	    Serial.print(",TimeDiff|");
-	  }
-	}
-  }
-}
+//void sendDataLogingCB()
+//{
+//  if (acquireData)
+//  {
+//    for (byte i=0; i < NUM_OF_THERMOMETERS; i++)
+//    {
+//      float tempF = sensors.getTempF(thermometers[i]);
+//	  if (tempF != DEVICE_DISCONNECTED)
+//	  {
+//	    Serial.print("DB_WRITE@Device|");
+//	    Serial.print(i);
+//	    Serial.print(",Temperature|");
+//	    Serial.print(tempF);
+//	    Serial.print(",TimeDiff|");
+//	  }
+//	}
+//  }
+//}
 
-void printTimerNextTrigger()
-{
-  Serial.println("================= Print Timer Next Trigger ======================");
-  time_t nextTrigger = Alarm.getNextTrigger();
-  time_t nowT = Alarm.getDigitsNow(dtSecond);
-  time_t whenTrigger = nextTrigger - nowT;
-  Serial.print("INFO@ The next Timer/Alarm to trigger is in ");
-  Serial.print(whenTrigger);
-  Serial.print(" seconds;");
-  Serial.print(" Now=");
-  Serial.print(nowT);
-  Serial.print("; nextTrigger=");
-  Serial.print(nextTrigger);
-  Serial.println();
-}
+//void printTimerNextTrigger()
+//{
+//  Serial.println("================= Print Timer Next Trigger ======================");
+//  time_t nextTrigger = Alarm.getNextTrigger();
+//  time_t nowT = Alarm.getDigitsNow(dtSecond);
+//  time_t whenTrigger = nextTrigger - nowT;
+//  Serial.print("INFO@ The next Timer/Alarm to trigger is in ");
+//  Serial.print(whenTrigger);
+//  Serial.print(" seconds;");
+//  Serial.print(" Now=");
+//  Serial.print(nowT);
+//  Serial.print("; nextTrigger=");
+//  Serial.print(nextTrigger);
+//  Serial.println();
+//}
 
-void  printDTNotAllocated(uint8_t timer)
-{
-  Serial.print("INFO@ Timer/Alarm"); 
-  Serial.print(timer);
-  Serial.print(" not allocated");
-  Serial.println();
-}
-void  printDTTimer(uint8_t timer)
-{
-  time_t alarmTime = Alarm.read(timer);
-  
-  Serial.print("INFO@ Timer"); 
-  Serial.print(timer);
-  Serial.print(" set to:");
-
-  Serial.print(alarmTime);
-  Serial.println();
-}
-void  printDTAlarm(uint8_t timer)
-{
-  time_t alarmTime = Alarm.read(timer);
-  
-  Serial.print("INFO@ Alarm"); 
-  Serial.print(timer);
-  Serial.print(" set to:");
-
-  Serial.print(alarmTime);
-  Serial.println();
-}
+//void  printDTNotAllocated(uint8_t timer)
+//{
+//  Serial.print("INFO@ Timer/Alarm"); 
+//  Serial.print(timer);
+//  Serial.print(" not allocated");
+//  Serial.println();
+//}
+//void  printDTTimer(uint8_t timer)
+//{
+//  time_t alarmTime = Alarm.read(timer);
+//  
+//  Serial.print("INFO@ Timer"); 
+//  Serial.print(timer);
+//  Serial.print(" set to:");
+//
+//  Serial.print(alarmTime);
+//  Serial.println();
+//}
+//void  printDTAlarm(uint8_t timer)
+//{
+//  time_t alarmTime = Alarm.read(timer);
+//  
+//  Serial.print("INFO@ Alarm"); 
+//  Serial.print(timer);
+//  Serial.print(" set to:");
+//
+//  Serial.print(alarmTime);
+//  Serial.println();
+//}
 
 // Process incoming serial data, and perform callbacks
 void processIncomingSerial()
@@ -884,6 +884,7 @@ void processIncomingSerial()
 // Setup function
 void setup() 
 {
+  bool didNotFindAllSensors = true;
   pinMode(LED_PIN, OUTPUT);
   digitalWrite(PUMP_PIN, HIGH);
   digitalWrite(AUX_PIN, HIGH);
@@ -916,37 +917,47 @@ void setup()
   attachCommandCallbacks();
 
 
-  // ----------- DALLAS ONE WIRE----------------------
-  // start up the library 
-  sensors.begin();
-
-  
-  // search for temperature devices on the bus, initialize their alarms
-  for (byte i=0; i < NUM_OF_THERMOMETERS; i++)
+  while (didNotFindAllSensors)
   {
-    thermometersActive[i] = true;
-    if (!sensors.getAddress(thermometers[i], i)) 
-	{
-	  Serial.print("Unable to find address for Device "); 
-	  Serial.print(i);
-	  Serial.println();
-      thermometersActive[i] = false;
-	  continue;
+    didNotFindAllSensors = false;
+    // ----------- DALLAS ONE WIRE----------------------
+    // start up the library 
+    sensors.begin();
+    
+    delay(250);
+  
+    // search for temperature devices on the bus, initialize their alarms
+    for (byte i=0; i < NUM_OF_THERMOMETERS; i++)
+    {
+      thermometersActive[i] = true;
+      if (!sensors.getAddress(thermometers[i], i)) 
+  	{    
+	    Serial.print("Unable to find address for Device "); 
+	    Serial.print(i);
+	    Serial.println();
+            thermometersActive[i] = false;
+	    didNotFindAllSensors = true;
+            continue;
 	}
-    
+         
 
-    // alarm when temp is higher than max
-    sensors.setHighAlarmTemp(thermometers[i], 125);
+      // alarm when temp is higher than max
+      sensors.setHighAlarmTemp(thermometers[i], 125);
     
-    // alarm when temp is lower than min
-    sensors.setLowAlarmTemp(thermometers[i], -10);
+      // alarm when temp is lower than min
+      sensors.setLowAlarmTemp(thermometers[i], -10);
 
 	// alarmHandler() will get called when a thermometer low/high alarm
 	// is met.
-    sensors.setAlarmHandler(&alarmHandler);
+      sensors.setAlarmHandler(&alarmHandler);
     
     
-  } // for
+    } // for
+  } // while 
+  
+  Serial.print("ParasitePower| "); 
+  if (sensors.isParasitePowerMode()) Serial.println("ON;");
+  else Serial.println("OFF;");
   
   setupPID();
 
