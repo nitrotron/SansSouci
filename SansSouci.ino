@@ -917,14 +917,13 @@ void setup()
   attachCommandCallbacks();
 
 
-  while (didNotFindAllSensors)
-  {
+  
     didNotFindAllSensors = false;
     // ----------- DALLAS ONE WIRE----------------------
     // start up the library 
     sensors.begin();
     
-    delay(250);
+    delay(750);
   
     // search for temperature devices on the bus, initialize their alarms
     for (byte i=0; i < NUM_OF_THERMOMETERS; i++)
@@ -932,14 +931,14 @@ void setup()
       thermometersActive[i] = true;
       if (!sensors.getAddress(thermometers[i], i)) 
   	{    
-	    Serial.print("Unable to find address for Device "); 
+	    Serial.print("NoAddress|"); 
 	    Serial.print(i);
-	    Serial.println();
+	    Serial.println(";");
             thermometersActive[i] = false;
 	    didNotFindAllSensors = true;
             continue;
 	}
-         
+
 
       // alarm when temp is higher than max
       sensors.setHighAlarmTemp(thermometers[i], 125);
@@ -953,9 +952,9 @@ void setup()
     
     
     } // for
-  } // while 
+   
   
-  Serial.print("ParasitePower| "); 
+  Serial.print("ParasitePower|"); 
   if (sensors.isParasitePowerMode()) Serial.println("ON;");
   else Serial.println("OFF;");
   
