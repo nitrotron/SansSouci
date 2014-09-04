@@ -507,7 +507,7 @@ void onSetPIDKd()
 void onTurnOnRims()
 {
   RimsEnable = cmdMessenger.readIntArg();
-  digitalWrite(RIMSENABLE_PIN, RimsEnable);
+  digitalWrite(RIMSENABLE_PIN, !RimsEnable);
 }
 void onTurnOnPump()
 {
@@ -893,6 +893,7 @@ void setup()
 
   
   pinMode(SSR_PIN, OUTPUT);
+  digitalWrite(RIMSENABLE_PIN, HIGH);
   pinMode(RIMSENABLE_PIN, OUTPUT);
   
   pinMode(TIMER_ALARM_HW_ENABLED,INPUT);
