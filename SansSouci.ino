@@ -25,7 +25,7 @@
 
 
 #define SERIAL_BAUD 9600
-#define NUM_OF_THERMOMETERS 3
+#define NUM_OF_THERMOMETERS 4
 
 //For the interrupt and debouncing
 long debouncing_time = 15; //Debouncing Time in Milliseconds
