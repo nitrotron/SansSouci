@@ -60,6 +60,7 @@ bool TimerAlarmActive = 0;
 bool AuxOn = 0;
 bool PumpOn = 0;
 bool RimsEnable = 0;
+bool DebugModeOn = 0;
 
 
 // Database and time variables
@@ -70,7 +71,7 @@ const unsigned long sampleInterval = 60; // second interval
 //RIMS & PID variables
 //Define Variables we'll be connecting to
 double SetPoint, Input, Output;
-uint8_t rimsThermoNumber = 0;
+uint8_t rimsThermoNumber = 3;
 int Kp = 2;
 int Ki = 5;
 int Kd = 1;
@@ -113,7 +114,8 @@ enum
     TurnOnRims, //21
     TurnOnPump, // 22
     TurnOnAux,  //23
-    SetInitialClock //24
+    SetInitialClock, //24
+    SetDebugModeOn // 25
 };
 
 // Callbacks define on which received commands we take action
@@ -145,6 +147,7 @@ void attachCommandCallbacks()
   cmdMessenger.attach(TurnOnPump,			  onTurnOnPump);
   cmdMessenger.attach(TurnOnAux,			  onTurnOnAux);
   cmdMessenger.attach(SetInitialClock,		  onSetInitialClock);
+  cmdMessenger.attach(SetDebugModeOn, onSetDebugModeOn);
 }
 
 
@@ -204,6 +207,35 @@ void onReturnStatus()
   Serial.print(Kd);
   Serial.print(";");
 
+}
+
+void printDebugMsg()
+{
+  if (DebugModeOn)
+  {
+    Serial.print("SetPoint|");
+    Serial.print(SetPoint);
+    Serial.print(";");
+    Serial.print("WindowSize|");
+    Serial.print(WindowSize);
+    Serial.print(";");
+    Serial.print("Kp|");
+    Serial.print(Kp);
+    Serial.print(";");
+    Serial.print("Ki|");
+    Serial.print(Ki);
+    Serial.print(";");
+    Serial.print("Kd|");
+    Serial.print(Kd);
+    Serial.print(";");
+    Serial.print("RimsEnable|");
+    Serial.print(RimsEnable);
+    Serial.println(";");
+    Serial.print("ArduinoTime|");
+    Serial.print(now());
+    Serial.println(";");
+  
+  }
 }
 
 
@@ -530,6 +562,12 @@ void onSetInitialClock()
    byte yr = cmdMessenger.readIntArg();
 
   setTime(hr,min,sec,day,month,yr); // set time to Saturday 8:29:00am Jan 1 2011
+}
+
+void onSetDebugModeOn()
+{
+  DebugModeOn = cmdMessenger.readIntArg();
+  
 }
 
 // function that will be called when an alarm condition exists during DallasTemperatures::processAlarms();
@@ -965,6 +1003,7 @@ void setup()
   //Alarm.timerRepeat(sampleInterval, sendDataLogingCB);
   Alarm.timerRepeat(10, onReturnStatus );
   Alarm.timerRepeat(1, processIncomingSerial);
+  Alarm.timerRepeat(1, printDebugMsg);
 
 }
 
