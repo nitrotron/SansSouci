@@ -234,8 +234,30 @@ void printDebugMsg()
     Serial.print("ArduinoTime|");
     Serial.print(now());
     Serial.println(";");
-  
-  }
+    Serial.print("ArduinoTimeLong|");
+    Serial.print(hour());
+    printDigits(minute());
+    printDigits(second());
+    Serial.print(" ");
+    Serial.print(day());
+    Serial.print("/");
+    Serial.print(month());
+    Serial.print("/");
+    Serial.print(year()); 
+    Serial.println(";"); 
+    Serial.print("Output|");
+    Serial.print(Output);
+    Serial.print(";");
+    Serial.print("millis|");
+    Serial.print(millis());
+    Serial.print(";");
+    Serial.print("windoeStartTime|");
+    Serial.print(windowStartTime);
+    Serial.println(";");
+    Serial.print("OutputTime|");
+    Serial.print(millis()-windowStartTime);
+    Serial.println(";");
+   }
 }
 
 
@@ -777,6 +799,9 @@ void thermometerLoopCB()
   // call alarm handler function defined by sensors.setAlarmHandler
   // for each device reporting an alarm
   sensors.processAlarms();
+  
+  //update the RIMS input
+  Input = sensors.getTempF(thermometers[rimsThermoNumber]);
 }
 
 //void sendInfoCB()
@@ -1004,8 +1029,11 @@ void setup()
   Alarm.timerRepeat(10, onReturnStatus );
   Alarm.timerRepeat(1, processIncomingSerial);
   Alarm.timerRepeat(1, printDebugMsg);
-
+  
+  Alarm.timerRepeat(1,thermometerLoopCB); 
 }
+
+
 
 // -------------------------------------------------
 // ------------------- Loop ------------------------
@@ -1013,17 +1041,19 @@ void setup()
 void loop() 
 {
 
-   thermometerLoopCB();
+//   if (millis() - windowStartTime > (WindowSize / 2.0))
+//   {
+//     thermometerLoopCB();
+//     Input = sensors.getTempF(thermometers[rimsThermoNumber]);
+//   }
+   myPID.Compute();
    
    if (RimsEnable)
    {
-    //if (sensors.requestTemperaturesByIndex(rimsThermoNumber))
-    //{
-      //Input = sensors.getTempFByIndex(rimsThermoNumber);
-      Input = sensors.getTempF(thermometers[rimsThermoNumber]);
-      myPID.Compute();
-    //}
-
+     
+      //Input = sensors.getTempF(thermometers[rimsThermoNumber]);
+//      myPID.Compute();
+    
     /************************************************
      * turn the output pin on/off based on pid output
      ************************************************/
@@ -1031,8 +1061,13 @@ void loop()
     { //time to shift the Relay Window
       windowStartTime += WindowSize;
     }
-    if(Output < millis() - windowStartTime) digitalWrite(SSR_PIN,HIGH);
-    else digitalWrite(SSR_PIN,LOW);
+    if(Output < millis() - windowStartTime) digitalWrite(SSR_PIN,LOW);
+    else digitalWrite(SSR_PIN,HIGH);
   }
-  Alarm.delay(125);
+  else // RIMS disabled, so have this always low
+  {
+    digitalWrite(SSR_PIN,LOW);
+  }
+  //Alarm.delay(125);
+  Alarm.delay(1);
 } 
