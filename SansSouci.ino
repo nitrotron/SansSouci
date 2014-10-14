@@ -1,3 +1,6 @@
+#include <EEPROMex.h>
+#include <EEPROMVar.h>
+
 #include <Time.h>
 
 #include <TimeAlarms.h>
@@ -72,9 +75,9 @@ const unsigned long sampleInterval = 60; // second interval
 //Define Variables we'll be connecting to
 double SetPoint, Input, Output;
 uint8_t rimsThermoNumber = 3;
-int Kp = 2;
-int Ki = 5;
-int Kd = 1;
+double Kp = 2;
+double Ki = 5;
+double Kd = 1;
 
 //Specify the links and initial tuning parameters
 PID myPID(&Input, &Output, &SetPoint,2,5,1, DIRECT);
@@ -118,6 +121,26 @@ enum
     SetDebugModeOn // 25
 };
 
+enum
+{
+  addressPIDSetPoint,
+  addressPIDWindowSize,
+  addressPIDKp,
+  addressPIDKi,
+  addressPIDKd,
+  addressTempAlarmH0,
+  addressTempAlarmL0,
+  addressTempAlarmH1,
+  addressTempAlarmL1,
+  addressTempAlarmH2,
+  addressTempAlarmL2,
+  addressTempAlarmH3,
+  addressTempAlarmL3,  
+  ADDRESSARRAYCOUNT
+};
+
+int addressEE[ADDRESSARRAYCOUNT];
+
 // Callbacks define on which received commands we take action
 void attachCommandCallbacks()
 {
@@ -150,7 +173,9 @@ void attachCommandCallbacks()
   cmdMessenger.attach(SetDebugModeOn, onSetDebugModeOn);
 }
 
-
+void setEEPromAddress()
+{
+}
 
 
 // ------------------  C A L L B A C K S -----------------------
@@ -206,6 +231,18 @@ void onReturnStatus()
   Serial.print("Kd|");
   Serial.print(Kd);
   Serial.print(";");
+  Serial.print("Output|");
+  Serial.print(Output);
+  Serial.print(";");
+  Serial.print("millis|");
+  Serial.print(millis());
+  Serial.print(";");
+  Serial.print("windoeStartTime|");
+  Serial.print(windowStartTime);
+  Serial.println(";");
+  Serial.print("OutputTime|");
+  Serial.print(millis()-windowStartTime);
+  Serial.println(";");
 
 }
 
@@ -1046,11 +1083,12 @@ void loop()
 //     thermometerLoopCB();
 //     Input = sensors.getTempF(thermometers[rimsThermoNumber]);
 //   }
-   myPID.Compute();
+   
    
    if (RimsEnable)
    {
-     
+   
+        myPID.Compute();  
       //Input = sensors.getTempF(thermometers[rimsThermoNumber]);
 //      myPID.Compute();
     
