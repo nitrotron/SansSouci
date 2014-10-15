@@ -175,6 +175,52 @@ void attachCommandCallbacks()
 
 void setEEPromAddress()
 {
+  addressEE[addressPIDSetPoint]  = EEPROM.getAddress(sizeof(double));
+  addressEE[addressPIDWindowSize] = EEPROM.getAddress(sizeof(double));
+  addressEE[addressPIDKp] = EEPROM.getAddress(sizeof(double));
+  addressEE[addressPIDKi] = EEPROM.getAddress(sizeof(double));
+  addressEE[addressPIDKd] = EEPROM.getAddress(sizeof(double));
+  addressEE[addressTempAlarmH0] = EEPROM.getAddress(sizeof(float));
+  addressEE[addressTempAlarmL0] = EEPROM.getAddress(sizeof(float));
+  addressEE[addressTempAlarmH1] = EEPROM.getAddress(sizeof(float));
+  addressEE[addressTempAlarmL1] = EEPROM.getAddress(sizeof(float));
+  addressEE[addressTempAlarmH2] = EEPROM.getAddress(sizeof(float));
+  addressEE[addressTempAlarmL2] = EEPROM.getAddress(sizeof(float));
+  addressEE[addressTempAlarmH3] = EEPROM.getAddress(sizeof(float));
+  addressEE[addressTempAlarmL3] = EEPROM.getAddress(sizeof(float));
+  
+  // for debugging purposes
+  Serial.print("addressPIDSetPoint|"); Serial.print(addressEE[addressPIDSetPoint]); Serial.println(";");  
+  Serial.print("addressPIDWindowSize|"); Serial.print(addressEE[addressPIDWindowSize]); Serial.println(";");
+  Serial.print("addressPIDKp|"); Serial.print(addressEE[addressPIDKp]); Serial.println(";");
+  Serial.print("addressPIDKi|"); Serial.print(addressEE[addressPIDKi]); Serial.println(";");
+  Serial.print("addressPIDKd|"); Serial.print(addressEE[addressPIDKd]); Serial.println(";");
+  Serial.print("addressTempAlarmH0|"); Serial.print(addressEE[addressTempAlarmH0]); Serial.println(";");
+  Serial.print("addressTempAlarmL0|"); Serial.print(addressEE[addressTempAlarmL0]); Serial.println(";");
+  Serial.print("addressTempAlarmH1|"); Serial.print(addressEE[addressTempAlarmH1]); Serial.println(";");
+  Serial.print("addressTempAlarmL1|"); Serial.print(addressEE[addressTempAlarmL1]); Serial.println(";");    
+  Serial.print("addressTempAlarmH2|"); Serial.print(addressEE[addressTempAlarmH2]); Serial.println(";");
+  Serial.print("addressTempAlarmL2|"); Serial.print(addressEE[addressTempAlarmL2]); Serial.println(";");    
+  Serial.print("addressTempAlarmH3|"); Serial.print(addressEE[addressTempAlarmH3]); Serial.println(";");
+  Serial.print("addressTempAlarmL3|"); Serial.print(addressEE[addressTempAlarmL3]); Serial.println(";");    
+}
+
+void updateLocalFromEEPROM()
+{
+  SetPoint =  EEPROM.readDouble(addressEE[addressPIDSetPoint]);  
+  WindowSize = EEPROM.readDouble(addressEE[addressPIDWindowSize]);
+  Kp = EEPROM.readDouble(addressEE[addressPIDKp]);
+  Ki = EEPROM.readDouble(addressEE[addressPIDKi]);
+  Kd = EEPROM.readDouble(addressEE[addressPIDKd]);
+  onSetTempAlarmHigh(EEPROM.readFloat(addressEE[addressTempAlarmH0]),0);
+  onSetTempAlarmLow(EEPROM.readFloat(addressEE[addressTempAlarmL0]),0);
+  onSetTempAlarmHigh(EEPROM.readFloat(addressEE[addressTempAlarmH1]),1);
+  onSetTempAlarmLow(EEPROM.readFloat(addressEE[addressTempAlarmL1]),1);
+  onSetTempAlarmHigh(EEPROM.readFloat(addressEE[addressTempAlarmH2]),2);
+  onSetTempAlarmLow(EEPROM.readFloat(addressEE[addressTempAlarmL2]),2);
+  onSetTempAlarmHigh(EEPROM.readFloat(addressEE[addressTempAlarmH3]),3);
+  onSetTempAlarmLow(EEPROM.readFloat(addressEE[addressTempAlarmL3]),3);
+  
 }
 
 
@@ -450,12 +496,20 @@ void onSetTempAlarmHigh()
   float tempF = cmdMessenger.readFloatArg();
 
 
-  if (thermometersActive[i])
+//  if (thermometersActive[i])
+//  {
+//    sensors.setHighAlarmTemp(thermometers[i], sensors.toCelsius(tempF));
+//  }
+
+  onSetTempAlarmHigh(tempF, i);
+
+}
+void onSetTempAlarmHigh(float inTemp, int whichTemp)
+{
+  if (thermometersActive[whichTemp])
   {
-    sensors.setHighAlarmTemp(thermometers[i], sensors.toCelsius(tempF));
+    sensors.setHighAlarmTemp(thermometers[whichTemp], sensors.toCelsius(inTemp));
   }
-
-
 }
 
 
@@ -465,10 +519,18 @@ void onSetTempAlarmLow()
   byte whichWire = cmdMessenger.readIntArg();
   float tempF = cmdMessenger.readFloatArg();
 
-  if (thermometersActive[whichWire])
+//  if (thermometersActive[whichWire])
+//  {
+//    sensors.setLowAlarmTemp(thermometers[whichWire], sensors.toCelsius(tempF));
+//
+//  }
+  onSetTempAlarmLow(tempF, whichWire);
+}
+void onSetTempAlarmLow(float inTemp, int whichTemp)
+{
+  if (thermometersActive[whichTemp])
   {
-    sensors.setLowAlarmTemp(thermometers[whichWire], sensors.toCelsius(tempF));
-
+    sensors.setLowAlarmTemp(thermometers[whichTemp], sensors.toCelsius(inTemp));
   }
 }
 
@@ -1059,6 +1121,8 @@ void setup()
   if (sensors.isParasitePowerMode()) Serial.println("ON;");
   else Serial.println("OFF;");
   
+  setEEPromAddress();
+  updateLocalFromEEPROM();
   setupPID();
 
   //Alarm.timerRepeat(1, thermometerLoopCB);  // processes alarms & thermometers every 15 seconds.
@@ -1068,6 +1132,8 @@ void setup()
   Alarm.timerRepeat(1, printDebugMsg);
   
   Alarm.timerRepeat(1,thermometerLoopCB); 
+  
+
 }
 
 
