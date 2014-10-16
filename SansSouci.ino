@@ -190,19 +190,19 @@ void setEEPromAddress()
   addressEE[addressTempAlarmL3] = EEPROM.getAddress(sizeof(float));
   
   // for debugging purposes
-  Serial.print("addressPIDSetPoint|"); Serial.print(addressEE[addressPIDSetPoint]); Serial.println(";");  
-  Serial.print("addressPIDWindowSize|"); Serial.print(addressEE[addressPIDWindowSize]); Serial.println(";");
-  Serial.print("addressPIDKp|"); Serial.print(addressEE[addressPIDKp]); Serial.println(";");
-  Serial.print("addressPIDKi|"); Serial.print(addressEE[addressPIDKi]); Serial.println(";");
-  Serial.print("addressPIDKd|"); Serial.print(addressEE[addressPIDKd]); Serial.println(";");
-  Serial.print("addressTempAlarmH0|"); Serial.print(addressEE[addressTempAlarmH0]); Serial.println(";");
-  Serial.print("addressTempAlarmL0|"); Serial.print(addressEE[addressTempAlarmL0]); Serial.println(";");
-  Serial.print("addressTempAlarmH1|"); Serial.print(addressEE[addressTempAlarmH1]); Serial.println(";");
-  Serial.print("addressTempAlarmL1|"); Serial.print(addressEE[addressTempAlarmL1]); Serial.println(";");    
-  Serial.print("addressTempAlarmH2|"); Serial.print(addressEE[addressTempAlarmH2]); Serial.println(";");
-  Serial.print("addressTempAlarmL2|"); Serial.print(addressEE[addressTempAlarmL2]); Serial.println(";");    
-  Serial.print("addressTempAlarmH3|"); Serial.print(addressEE[addressTempAlarmH3]); Serial.println(";");
-  Serial.print("addressTempAlarmL3|"); Serial.print(addressEE[addressTempAlarmL3]); Serial.println(";");    
+//  Serial.print("addressPIDSetPoint|"); Serial.print(addressEE[addressPIDSetPoint]); Serial.println(";");  
+//  Serial.print("addressPIDWindowSize|"); Serial.print(addressEE[addressPIDWindowSize]); Serial.println(";");
+//  Serial.print("addressPIDKp|"); Serial.print(addressEE[addressPIDKp]); Serial.println(";");
+//  Serial.print("addressPIDKi|"); Serial.print(addressEE[addressPIDKi]); Serial.println(";");
+//  Serial.print("addressPIDKd|"); Serial.print(addressEE[addressPIDKd]); Serial.println(";");
+//  Serial.print("addressTempAlarmH0|"); Serial.print(addressEE[addressTempAlarmH0]); Serial.println(";");
+//  Serial.print("addressTempAlarmL0|"); Serial.print(addressEE[addressTempAlarmL0]); Serial.println(";");
+//  Serial.print("addressTempAlarmH1|"); Serial.print(addressEE[addressTempAlarmH1]); Serial.println(";");
+//  Serial.print("addressTempAlarmL1|"); Serial.print(addressEE[addressTempAlarmL1]); Serial.println(";");    
+//  Serial.print("addressTempAlarmH2|"); Serial.print(addressEE[addressTempAlarmH2]); Serial.println(";");
+//  Serial.print("addressTempAlarmL2|"); Serial.print(addressEE[addressTempAlarmL2]); Serial.println(";");    
+//  Serial.print("addressTempAlarmH3|"); Serial.print(addressEE[addressTempAlarmH3]); Serial.println(";");
+//  Serial.print("addressTempAlarmL3|"); Serial.print(addressEE[addressTempAlarmL3]); Serial.println(";");    
 }
 
 void updateLocalFromEEPROM()
@@ -234,11 +234,19 @@ void onReturnUnknownCmd()
 //Used to provide general status()
 void onReturnStatus()
 {
+ // String printMsg;
   onGetTemps();
   onGetSensors();
   onGetTempAlarms();
   onGetAlarmStatus();
   GetTimerStatus();
+  
+//  printMsg = "PumpOn|"; printMsg += PumpOn; printMsg += ";";
+//  Serial.println(printMsg);
+//  printMsg = "AuxOn|"; printMsg += AuxOn; printMsg +=";";
+//  Serial.println(printMsg);
+//  printMsg = "RimsEnable|"; printMsg += RimsEnable; printMsg += ";";
+//  Serial.println(printMsg);
   Serial.print("PumpOn|");
   Serial.print(PumpOn);
   Serial.println(";");
@@ -495,13 +503,8 @@ void onSetTempAlarmHigh()
   byte i = cmdMessenger.readIntArg();
   float tempF = cmdMessenger.readFloatArg();
 
-
-//  if (thermometersActive[i])
-//  {
-//    sensors.setHighAlarmTemp(thermometers[i], sensors.toCelsius(tempF));
-//  }
-
   onSetTempAlarmHigh(tempF, i);
+  EEPROM.writeFloat(addressEE[addressTempAlarmH0+(i*2)],tempF);  
 
 }
 void onSetTempAlarmHigh(float inTemp, int whichTemp)
@@ -519,12 +522,8 @@ void onSetTempAlarmLow()
   byte whichWire = cmdMessenger.readIntArg();
   float tempF = cmdMessenger.readFloatArg();
 
-//  if (thermometersActive[whichWire])
-//  {
-//    sensors.setLowAlarmTemp(thermometers[whichWire], sensors.toCelsius(tempF));
-//
-//  }
   onSetTempAlarmLow(tempF, whichWire);
+  EEPROM.writeFloat(addressEE[addressTempAlarmL0+(whichWire*2)],tempF);  
 }
 void onSetTempAlarmLow(float inTemp, int whichTemp)
 {
@@ -619,6 +618,7 @@ void onStopLogging()
 void onSetPIDSetPoint()
 {
   SetPoint = cmdMessenger.readFloatArg();
+  EEPROM.updateDouble(addressEE[addressPIDSetPoint],SetPoint);  
   Serial.print("INFO@PIDSetPoint|");
   Serial.print(SetPoint);
   Serial.println(";");
@@ -626,6 +626,7 @@ void onSetPIDSetPoint()
 void onSetPIDWindowSize()
 {
   WindowSize = cmdMessenger.readFloatArg();
+  EEPROM.updateDouble(addressEE[addressPIDWindowSize],WindowSize);  
   Serial.print("INFO@PIDWindowSize|");
   Serial.print(WindowSize);
   Serial.println(";");
@@ -633,6 +634,7 @@ void onSetPIDWindowSize()
 void onSetPIDKp()
 {
   Kp = cmdMessenger.readFloatArg();
+  EEPROM.updateDouble(addressEE[addressPIDKp],Kp);  
   Serial.print("INFO@PIDKp|");
   Serial.print(Kp);
   Serial.println(";");
@@ -642,6 +644,7 @@ void onSetPIDKp()
 void onSetPIDKi()
 {
   Ki = cmdMessenger.readFloatArg();
+  EEPROM.updateDouble(addressEE[addressPIDKi],Ki);  
   Serial.print("INFO@PIDKi|");
   Serial.print(Ki);
   Serial.println(";");
@@ -651,6 +654,7 @@ void onSetPIDKi()
 void onSetPIDKd()
 {
   Kd = cmdMessenger.readFloatArg();
+  EEPROM.updateDouble(addressEE[addressPIDKd],Kd);  
   Serial.print("INFO@PIDKd|");
   Serial.print(Kd);
   Serial.println(";");
@@ -902,34 +906,6 @@ void thermometerLoopCB()
   //update the RIMS input
   Input = sensors.getTempF(thermometers[rimsThermoNumber]);
 }
-
-//void sendInfoCB()
-//{
-//    Serial.println();
-//    Serial.println();
-//    Serial.println("===================== Print General Info Begin =====================");
-//	for (byte i=0; i < NUM_OF_THERMOMETERS; i++)
-//     {
-//       if (thermometersActive[i])
-//         printCurrentTemp(thermometers[i]);
-//     }
-//
-//	 printTimerNextTrigger();
-//
-//	 for (uint8_t i=0; i < dtNBR_ALARMS; i++)
-//	 {
-//		dtAlarmPeriod_t alarmPeriodType = Alarm.readType(i);
-//		if (alarmPeriodType == dtNotAllocated)
-//		  printDTNotAllocated(i);
-//		else if (alarmPeriodType == dtTimer)
-//		  printDTTimer(i);
-//	    else
-//		  printDTAlarm(i);
-//	 }
-//    Serial.println("===================== Print General Info End =====================");
-//    Serial.println();
-//    Serial.println();
-//}
 
 void GetTimerStatus()
 {
