@@ -231,6 +231,32 @@ void onReturnUnknownCmd()
   cmdMessenger.sendCmd(ReturnUnknownCmd,"Command without attached callback");
 }
 
+void printKeyValue( const char *key, uint8_t valLen, const char *val)
+{
+//  uint8_t message[keyLen+valLen+3];
+  
+  Serial.print(key);
+  Serial.print('|');
+  Serial.print(val);
+  Serial.println(';');
+  
+//  for (int i = 0; i < keyLen;i++)
+//  {
+//    message[i] = key[i];
+//  }
+//  message[keyLen] = '|';
+//  for (int i = valLen; i < valLen + 1; i++)
+//  {
+//    message[keyLen+1+i] = val[i];
+//  }
+//  message[keyLen + valLen +1] = ';';
+//  message[keyLen + valLen +2] = '\r';
+//  message[keyLen + valLen+3] = '\n';
+//  
+//  Serial.write(message);
+  
+}
+
 //Used to provide general status()
 void onReturnStatus()
 {
@@ -247,18 +273,22 @@ void onReturnStatus()
 //  Serial.println(printMsg);
 //  printMsg = "RimsEnable|"; printMsg += RimsEnable; printMsg += ";";
 //  Serial.println(printMsg);
-  Serial.print("PumpOn|");
-  Serial.print(PumpOn);
-  Serial.println(";");
-  Serial.print("AuxOn|");
-  Serial.print(AuxOn);
-  Serial.println(";");
-  Serial.print("RimsEnable|");
-  Serial.print(RimsEnable);
-  Serial.println(";");
+//  Serial.print("PumpOn|");
+//  Serial.print(PumpOn);
+//  Serial.println(";");
+  printKeyValue("PumpOn", sizeof(PumpOn), (char*)&PumpOn);
+//  Serial.print("AuxOn|");
+//  Serial.print(AuxOn);
+//  Serial.println(";");
+  printKeyValue("AuxOn", sizeof(AuxOn), (char *)&AuxOn);
+//  Serial.print("RimsEnable|");
+//  Serial.print(RimsEnable);
+//  Serial.println(";");
+  printKeyValue("RimsEnable", sizeof(RimsEnable), (char *)&RimsEnable);
   Serial.print("ArduinoTime|");
   Serial.print(now());
   Serial.println(";");
+//  printKeyValue("ArduinoTime", sizeof(now()), (char *)&now());
   Serial.print("ArduinoTimeLong|");
   Serial.print(hour());
   printDigits(minute());
@@ -270,84 +300,92 @@ void onReturnStatus()
   Serial.print("/");
   Serial.print(year()); 
   Serial.println(";"); 
-  Serial.print("SetPoint|");
-  Serial.print(SetPoint);
-  Serial.print(";");
-  Serial.print("WindowSize|");
-  Serial.print(WindowSize);
-  Serial.print(";");
-  Serial.print("Kp|");
-  Serial.print(Kp);
-  Serial.print(";");
-  Serial.print("Ki|");
-  Serial.print(Ki);
-  Serial.print(";");
-  Serial.print("Kd|");
-  Serial.print(Kd);
-  Serial.print(";");
-  Serial.print("Output|");
-  Serial.print(Output);
-  Serial.print(";");
+//  Serial.print("SetPoint|");
+//  Serial.print(SetPoint);
+//  Serial.print(";");
+  printKeyValue("SetPoint", sizeof(SetPoint), (char *)&SetPoint);
+//  Serial.print("WindowSize|");
+//  Serial.print(WindowSize);
+//  Serial.print(";");
+  printKeyValue("SetPoint", sizeof(SetPoint), (char *)&SetPoint);  
+//  Serial.print("Kp|");
+//  Serial.print(Kp);
+//  Serial.print(";");
+    printKeyValue("Kp", sizeof(Kp), (char *)&Kp);
+//  Serial.print("Ki|");
+//  Serial.print(Ki);
+//  Serial.print(";");
+    printKeyValue("Ki", sizeof(Ki), (char *)&Ki);
+//  Serial.print("Kd|");
+//  Serial.print(Kd);
+//  Serial.print(";");
+    printKeyValue("Kd", sizeof(Kd), (char *)&Kd);
+//  Serial.print("Output|");
+//  Serial.print(Output);
+//  Serial.print(";");
+    printKeyValue("Output", sizeof(Output), (char *)&Output);
   Serial.print("millis|");
   Serial.print(millis());
   Serial.print(";");
-  Serial.print("windoeStartTime|");
-  Serial.print(windowStartTime);
-  Serial.println(";");
+//    printKeyValue("millis", sizeof(millis()), (char *)&millis());
+//  Serial.print("windowStartTime|");
+//  Serial.print(windowStartTime);
+//  Serial.println(";");
+    printKeyValue("windowStartTime", sizeof(windowStartTime), (char *)&windowStartTime);
   Serial.print("OutputTime|");
   Serial.print(millis()-windowStartTime);
   Serial.println(";");
-
+//  printKeyValue("OutputTime", sizeof(OutputTime), (char *)&OutputTime);
 }
 
 void printDebugMsg()
 {
   if (DebugModeOn)
   {
-    Serial.print("SetPoint|");
-    Serial.print(SetPoint);
-    Serial.print(";");
-    Serial.print("WindowSize|");
-    Serial.print(WindowSize);
-    Serial.print(";");
-    Serial.print("Kp|");
-    Serial.print(Kp);
-    Serial.print(";");
-    Serial.print("Ki|");
-    Serial.print(Ki);
-    Serial.print(";");
-    Serial.print("Kd|");
-    Serial.print(Kd);
-    Serial.print(";");
-    Serial.print("RimsEnable|");
-    Serial.print(RimsEnable);
-    Serial.println(";");
-    Serial.print("ArduinoTime|");
-    Serial.print(now());
-    Serial.println(";");
-    Serial.print("ArduinoTimeLong|");
-    Serial.print(hour());
-    printDigits(minute());
-    printDigits(second());
-    Serial.print(" ");
-    Serial.print(day());
-    Serial.print("/");
-    Serial.print(month());
-    Serial.print("/");
-    Serial.print(year()); 
-    Serial.println(";"); 
-    Serial.print("Output|");
-    Serial.print(Output);
-    Serial.print(";");
-    Serial.print("millis|");
-    Serial.print(millis());
-    Serial.print(";");
-    Serial.print("windoeStartTime|");
-    Serial.print(windowStartTime);
-    Serial.println(";");
-    Serial.print("OutputTime|");
-    Serial.print(millis()-windowStartTime);
-    Serial.println(";");
+//    Serial.print("SetPoint|");
+//    Serial.print(SetPoint);
+//    Serial.print(";");
+//    Serial.print("WindowSize|");
+//    Serial.print(WindowSize);
+//    Serial.print(";");
+//    Serial.print("Kp|");
+//    Serial.print(Kp);
+//    Serial.print(";");
+//    Serial.print("Ki|");
+//    Serial.print(Ki);
+//    Serial.print(";");
+//    Serial.print("Kd|");
+//    Serial.print(Kd);
+//    Serial.print(";");
+//    Serial.print("RimsEnable|");
+//    Serial.print(RimsEnable);
+//    Serial.println(";");
+//    Serial.print("ArduinoTime|");
+//    Serial.print(now());
+//    Serial.println(";");
+//    Serial.print("ArduinoTimeLong|");
+//    Serial.print(hour());
+//    printDigits(minute());
+//    printDigits(second());
+//    Serial.print(" ");
+//    Serial.print(day());
+//    Serial.print("/");
+//    Serial.print(month());
+//    Serial.print("/");
+//    Serial.print(year()); 
+//    Serial.println(";"); 
+//    Serial.print("Output|");
+//    Serial.print(Output);
+//    Serial.print(";");
+//    Serial.print("millis|");
+//    Serial.print(millis());
+//    Serial.print(";");
+//    Serial.print("windoeStartTime|");
+//    Serial.print(windowStartTime);
+//    Serial.println(";");
+//    Serial.print("OutputTime|");
+//    Serial.print(millis()-windowStartTime);
+//    Serial.println(";");
    }
 }
 
@@ -1080,10 +1118,10 @@ void setup()
 
 
       // alarm when temp is higher than max
-      sensors.setHighAlarmTemp(thermometers[i], 125);
+      //sensors.setHighAlarmTemp(thermometers[i], 125);
     
       // alarm when temp is lower than min
-      sensors.setLowAlarmTemp(thermometers[i], -10);
+      //sensors.setLowAlarmTemp(thermometers[i], -10);
 
 	// alarmHandler() will get called when a thermometer low/high alarm
 	// is met.
@@ -1105,7 +1143,7 @@ void setup()
   //Alarm.timerRepeat(sampleInterval, sendDataLogingCB);
   Alarm.timerRepeat(10, onReturnStatus );
   Alarm.timerRepeat(1, processIncomingSerial);
-  Alarm.timerRepeat(1, printDebugMsg);
+  //Alarm.timerRepeat(1, printDebugMsg);
   
   Alarm.timerRepeat(1,thermometerLoopCB); 
   
