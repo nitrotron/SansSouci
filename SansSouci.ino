@@ -231,30 +231,17 @@ void onReturnUnknownCmd()
   cmdMessenger.sendCmd(ReturnUnknownCmd,"Command without attached callback");
 }
 
-void printKeyValue( const char *key, uint8_t valLen, const char *val)
+
+void printKeyValue( const char *key, uint8_t valLen, const char *val, bool lastOfList)
 {
 //  uint8_t message[keyLen+valLen+3];
   
   Serial.print(key);
-  Serial.print('|');
+  Serial.print(':');
   Serial.print(val);
-  Serial.println(';');
-  
-//  for (int i = 0; i < keyLen;i++)
-//  {
-//    message[i] = key[i];
-//  }
-//  message[keyLen] = '|';
-//  for (int i = valLen; i < valLen + 1; i++)
-//  {
-//    message[keyLen+1+i] = val[i];
-//  }
-//  message[keyLen + valLen +1] = ';';
-//  message[keyLen + valLen +2] = '\r';
-//  message[keyLen + valLen+3] = '\n';
-//  
-//  Serial.write(message);
-  
+  if (lastOfList == false) {
+    Serial.print(',');
+  }
 }
 
 //Used to provide general status()
@@ -267,29 +254,13 @@ void onReturnStatus()
   onGetAlarmStatus();
   GetTimerStatus();
   
-//  printMsg = "PumpOn|"; printMsg += PumpOn; printMsg += ";";
-//  Serial.println(printMsg);
-//  printMsg = "AuxOn|"; printMsg += AuxOn; printMsg +=";";
-//  Serial.println(printMsg);
-//  printMsg = "RimsEnable|"; printMsg += RimsEnable; printMsg += ";";
-//  Serial.println(printMsg);
-//  Serial.print("PumpOn|");
-//  Serial.print(PumpOn);
-//  Serial.println(";");
-  printKeyValue("PumpOn", sizeof(PumpOn), (char*)&PumpOn);
-//  Serial.print("AuxOn|");
-//  Serial.print(AuxOn);
-//  Serial.println(";");
-  printKeyValue("AuxOn", sizeof(AuxOn), (char *)&AuxOn);
-//  Serial.print("RimsEnable|");
-//  Serial.print(RimsEnable);
-//  Serial.println(";");
-  printKeyValue("RimsEnable", sizeof(RimsEnable), (char *)&RimsEnable);
-  Serial.print("ArduinoTime|");
+  printKeyValue("PumpOn", sizeof(PumpOn), (char*)&PumpOn, false);
+  printKeyValue("AuxOn", sizeof(AuxOn), (char *)&AuxOn, false);
+  printKeyValue("RimsEnable", sizeof(RimsEnable), (char *)&RimsEnable, false);
+  Serial.print("ArduinoTime:");
   Serial.print(now());
-  Serial.println(";");
-//  printKeyValue("ArduinoTime", sizeof(now()), (char *)&now());
-  Serial.print("ArduinoTimeLong|");
+  Serial.println(",");
+  Serial.print("ArduinoTimeLong:\"");
   Serial.print(hour());
   printDigits(minute());
   printDigits(second());
@@ -299,94 +270,20 @@ void onReturnStatus()
   Serial.print(month());
   Serial.print("/");
   Serial.print(year()); 
-  Serial.println(";"); 
-//  Serial.print("SetPoint|");
-//  Serial.print(SetPoint);
-//  Serial.print(";");
-  printKeyValue("SetPoint", sizeof(SetPoint), (char *)&SetPoint);
-//  Serial.print("WindowSize|");
-//  Serial.print(WindowSize);
-//  Serial.print(";");
-  printKeyValue("SetPoint", sizeof(SetPoint), (char *)&SetPoint);  
-//  Serial.print("Kp|");
-//  Serial.print(Kp);
-//  Serial.print(";");
-    printKeyValue("Kp", sizeof(Kp), (char *)&Kp);
-//  Serial.print("Ki|");
-//  Serial.print(Ki);
-//  Serial.print(";");
-    printKeyValue("Ki", sizeof(Ki), (char *)&Ki);
-//  Serial.print("Kd|");
-//  Serial.print(Kd);
-//  Serial.print(";");
-    printKeyValue("Kd", sizeof(Kd), (char *)&Kd);
-//  Serial.print("Output|");
-//  Serial.print(Output);
-//  Serial.print(";");
-    printKeyValue("Output", sizeof(Output), (char *)&Output);
-  Serial.print("millis|");
+  Serial.println("\","); 
+  printKeyValue("SetPoint", sizeof(SetPoint), (char *)&SetPoint, false);
+  printKeyValue("SetPoint", sizeof(SetPoint), (char *)&SetPoint, false);  
+  printKeyValue("Kp", sizeof(Kp), (char *)&Kp, false);
+  printKeyValue("Ki", sizeof(Ki), (char *)&Ki, false);
+  printKeyValue("Kd", sizeof(Kd), (char *)&Kd, false);
+  printKeyValue("Output", sizeof(Output), (char *)&Output, false);
+  Serial.print("millis:");
   Serial.print(millis());
-  Serial.print(";");
-//    printKeyValue("millis", sizeof(millis()), (char *)&millis());
-//  Serial.print("windowStartTime|");
-//  Serial.print(windowStartTime);
-//  Serial.println(";");
-    printKeyValue("windowStartTime", sizeof(windowStartTime), (char *)&windowStartTime);
-  Serial.print("OutputTime|");
+  Serial.print(",");
+  printKeyValue("windowStartTime", sizeof(windowStartTime), (char *)&windowStartTime, false);
+  Serial.print("OutputTime:");
   Serial.print(millis()-windowStartTime);
-  Serial.println(";");
-//  printKeyValue("OutputTime", sizeof(OutputTime), (char *)&OutputTime);
-}
-
-void printDebugMsg()
-{
-  if (DebugModeOn)
-  {
-//    Serial.print("SetPoint|");
-//    Serial.print(SetPoint);
-//    Serial.print(";");
-//    Serial.print("WindowSize|");
-//    Serial.print(WindowSize);
-//    Serial.print(";");
-//    Serial.print("Kp|");
-//    Serial.print(Kp);
-//    Serial.print(";");
-//    Serial.print("Ki|");
-//    Serial.print(Ki);
-//    Serial.print(";");
-//    Serial.print("Kd|");
-//    Serial.print(Kd);
-//    Serial.print(";");
-//    Serial.print("RimsEnable|");
-//    Serial.print(RimsEnable);
-//    Serial.println(";");
-//    Serial.print("ArduinoTime|");
-//    Serial.print(now());
-//    Serial.println(";");
-//    Serial.print("ArduinoTimeLong|");
-//    Serial.print(hour());
-//    printDigits(minute());
-//    printDigits(second());
-//    Serial.print(" ");
-//    Serial.print(day());
-//    Serial.print("/");
-//    Serial.print(month());
-//    Serial.print("/");
-//    Serial.print(year()); 
-//    Serial.println(";"); 
-//    Serial.print("Output|");
-//    Serial.print(Output);
-//    Serial.print(";");
-//    Serial.print("millis|");
-//    Serial.print(millis());
-//    Serial.print(";");
-//    Serial.print("windoeStartTime|");
-//    Serial.print(windowStartTime);
-//    Serial.println(";");
-//    Serial.print("OutputTime|");
-//    Serial.print(millis()-windowStartTime);
-//    Serial.println(";");
-   }
+  Serial.println("}");
 }
 
 
@@ -397,6 +294,14 @@ void printDigits(int digits){
     Serial.print('0');
   Serial.print(digits);
 }
+
+
+void getTempArrays()
+{
+   Serial.print("thermometers: [{");
+ 
+}
+
 
 //  Called function to send back all of the temperature probes' temperature
 //  
@@ -410,23 +315,26 @@ void onGetTemps()
   {
     if (thermometersActive[i])
     {
-	  Serial.print("Thermometer");
-	  Serial.print(i);
-	  Serial.print("|");
-	  Serial.print(sensors.getTempF(thermometers[i]));
-	  Serial.print(",");
+      printKeyValue("id", sizeof(i), (char*)&i, false);
+      printKeyValue("temp", sizeof(sensors.getTempF(thermometers[i]), (char*)&sensors.getTempF(thermometers[i]), false);
+      printAlarmInfoByIndex(i);
+
+printKeyValue("sensor", sizeof(sensors.getTempF(thermometers[i]), (char*)&sensors.getTempF(thermometers[i]), false);
+
+
+      Serial.print("sensor:");
+      for (byte k=0; k < 8; k++)
+      {
+        Serial.print(thermometers[i][k], DEC);
+      }
+      Serial.print(",");
+    }
+
+
+
     }
   }
-  if (thermometersActive[i])
-    {
-	  Serial.print("Thermometer");
-	  Serial.print(i);
-	  Serial.print("|");
-	  Serial.print(sensors.getTempF(thermometers[i]));
-    }
- 
-  Serial.print(";");
-  Serial.println();
+
 }
 //  Called function to send back all of the temperature probes' temperature
 void onGetTemp()
@@ -629,13 +537,9 @@ void onResetAlarm()
 
 void onGetAlarmStatus()
 {
-  Serial.print("INFO@TempAlarmActive|");
-  Serial.print(TempAlarmActive);
-  Serial.print(",TimerAlarmActive|");
-  Serial.print(TimerAlarmActive);
-  Serial.print(",WhichThermoAlarm|");
-  Serial.print(WhichThermometerAlarmActive);
-  Serial.println(";");
+  printKeyValue("tempAlarmActive", sizeof(TempAlarmActive), (char *)&TempAlarmActive, false);
+  printKeyValue("timerAlarmActive", sizeof(TimerAlarmActive), (char *)&TimerAlarmActive, false);
+  printKeyValue("whichThermoAlarm", sizeof(WhichThermoAlarm), (char *)&WhichThermoAlarm, false);  
 }
 
 void onStartLogging()
@@ -912,24 +816,15 @@ void printAlarmInfo(DeviceAddress deviceAddress)
 void printAlarmInfoByIndex(byte i)
 {
   char temp;
-  Serial.print("ThermometerHighAlarm");
-  Serial.print(i);
-  Serial.print("|");
-  //Serial.print("_HIGH|");
-
+  Serial.print("highAlarm:");
   temp = sensors.getHighAlarmTemp(thermometers[i]);
-  Serial.print(DallasTemperature::toFahrenheit(temp), DEC);
-  
+  Serial.print(DallasTemperature::toFahrenheit(temp), DEC);  
   Serial.print(",");
 
-  Serial.print("ThermometerLowAlarm");
-  Serial.print(i);
-  Serial.print("|");
-
-
+  Serial.print("lowAlarm:");
   temp = sensors.getLowAlarmTemp(thermometers[i]);
   Serial.print(DallasTemperature::toFahrenheit(temp), DEC);
- 
+  Serial.print(","); 
 }
 
 void thermometerLoopCB()
@@ -1143,7 +1038,7 @@ void setup()
   //Alarm.timerRepeat(sampleInterval, sendDataLogingCB);
   Alarm.timerRepeat(10, onReturnStatus );
   Alarm.timerRepeat(1, processIncomingSerial);
-  //Alarm.timerRepeat(1, printDebugMsg);
+  
   
   Alarm.timerRepeat(1,thermometerLoopCB); 
   
