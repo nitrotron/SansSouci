@@ -95,30 +95,23 @@ enum
 {
     ReturnUnknownCmd, //0
     ReturnStatus, // 1
-    GetTemps,//2
-    GetTemp,//3
-    GetSensors,//4
-    GetSensor,//5
-    GetTempAlarms,//6
-    SetTempAlarmHigh,//7
-    SetTempAlarmLow,//8
-    ClearTempAlarms,//9
-    GetTimer,//10
-    SetTimer,//11
-    ResetAlarm,//12  
-    GetAlarmStatus, //13
-    StartLogging,//14
-    StopLogging,//15
-    SetPIDSetPoint,//16
-    SetPIDWindowSize,//17
-    SetPIDKp,//18
-    SetPIDKi,//19
-    SetPIDKd,//20
-    TurnOnRims, //21
-    TurnOnPump, // 22
-    TurnOnAux,  //23
-    SetInitialClock, //24
-    SetDebugModeOn // 25
+    SetTempAlarmHigh,//2
+    SetTempAlarmLow,//3
+    ClearTempAlarms,//4
+    SetTimer,//5
+    ResetAlarm,//6
+    StartLogging,//7
+    StopLogging,//8
+    SetPIDSetPoint,//9
+    SetPIDWindowSize,//10
+    SetPIDKp,//11
+    SetPIDKi,//12
+    SetPIDKd,//13
+    TurnOnRims, //14
+    TurnOnPump, // 15
+    TurnOnAux,  //16
+    SetInitialClock, //17
+    SetDebugModeOn // 18
 };
 
 enum
@@ -145,31 +138,25 @@ int addressEE[ADDRESSARRAYCOUNT];
 void attachCommandCallbacks()
 {
   // Attach callback methods
-  cmdMessenger.attach(onReturnUnknownCmd);
-  cmdMessenger.attach(ReturnStatus,           onReturnStatus);
-  cmdMessenger.attach(GetTemps,               onGetTemps);
-  cmdMessenger.attach(GetTemp,  			  onGetTemp);
-  cmdMessenger.attach(GetSensors,  			  onGetSensors);
-  cmdMessenger.attach(GetSensor,  			  onGetSensor);
-  cmdMessenger.attach(GetTempAlarms,  		  onGetTempAlarms);
-  cmdMessenger.attach(SetTempAlarmHigh,  	  onSetTempAlarmHigh);
-  cmdMessenger.attach(SetTempAlarmLow,  	  onSetTempAlarmLow);
-  cmdMessenger.attach(ClearTempAlarms,  	  onClearTempAlarms);
-  cmdMessenger.attach(GetTimer,  			  onGetTimer);
-  cmdMessenger.attach(SetTimer,  			  onSetTimer);
-  cmdMessenger.attach(ResetAlarm,		      onResetAlarm);
-  cmdMessenger.attach(GetAlarmStatus,         onGetAlarmStatus);
-  cmdMessenger.attach(StartLogging,           onStartLogging);
-  cmdMessenger.attach(StopLogging,            onStopLogging);
-  cmdMessenger.attach(SetPIDSetPoint,         onSetPIDSetPoint);
-  cmdMessenger.attach(SetPIDWindowSize,       onSetPIDWindowSize);
-  cmdMessenger.attach(SetPIDKp,               onSetPIDKp);
-  cmdMessenger.attach(SetPIDKi,               onSetPIDKi);
-  cmdMessenger.attach(SetPIDKd,				  onSetPIDKd);
-  cmdMessenger.attach(TurnOnRims,			  onTurnOnRims);
-  cmdMessenger.attach(TurnOnPump,			  onTurnOnPump);
-  cmdMessenger.attach(TurnOnAux,			  onTurnOnAux);
-  cmdMessenger.attach(SetInitialClock,		  onSetInitialClock);
+  cmdMessenger.attach(onReturnUnknownCmd);                                 
+  cmdMessenger.attach(ReturnStatus,           onReturnStatus);				
+  cmdMessenger.attach(GetTempAlarms,  		  onGetTempAlarms);				
+  cmdMessenger.attach(SetTempAlarmHigh,  	  onSetTempAlarmHigh);			
+  cmdMessenger.attach(SetTempAlarmLow,  	  onSetTempAlarmLow);			
+  cmdMessenger.attach(ClearTempAlarms,  	  onClearTempAlarms);			
+  cmdMessenger.attach(SetTimer,  			  onSetTimer);					
+  cmdMessenger.attach(ResetAlarm,		      onResetAlarm);				
+  cmdMessenger.attach(StartLogging,           onStartLogging);				
+  cmdMessenger.attach(StopLogging,            onStopLogging);				
+  cmdMessenger.attach(SetPIDSetPoint,         onSetPIDSetPoint);			
+  cmdMessenger.attach(SetPIDWindowSize,       onSetPIDWindowSize);			
+  cmdMessenger.attach(SetPIDKp,               onSetPIDKp);					
+  cmdMessenger.attach(SetPIDKi,               onSetPIDKi);					
+  cmdMessenger.attach(SetPIDKd,				  onSetPIDKd);					
+  cmdMessenger.attach(TurnOnRims,			  onTurnOnRims);				
+  cmdMessenger.attach(TurnOnPump,			  onTurnOnPump);				
+  cmdMessenger.attach(TurnOnAux,			  onTurnOnAux);					
+  cmdMessenger.attach(SetInitialClock,		  onSetInitialClock);			
   cmdMessenger.attach(SetDebugModeOn, onSetDebugModeOn);
 }
 
@@ -248,10 +235,10 @@ void printKeyValue( const char *key, uint8_t valLen, const char *val, bool lastO
 void onReturnStatus()
 {
  // String printMsg;
-  onGetTemps();
-  onGetSensors();
-  onGetTempAlarms();
-  onGetAlarmStatus();
+
+  Serial.print("{");
+  GetTemps();
+  GetAlarmStatus();
   GetTimerStatus();
   
   printKeyValue("PumpOn", sizeof(PumpOn), (char*)&PumpOn, false);
@@ -283,6 +270,7 @@ void onReturnStatus()
   printKeyValue("windowStartTime", sizeof(windowStartTime), (char *)&windowStartTime, false);
   Serial.print("OutputTime:");
   Serial.print(millis()-windowStartTime);
+
   Serial.println("}");
 }
 
@@ -296,21 +284,18 @@ void printDigits(int digits){
 }
 
 
-void getTempArrays()
-{
-   Serial.print("thermometers: [{");
- 
-}
 
 
 //  Called function to send back all of the temperature probes' temperature
 //  
 //  The return value will be "ReturnTemps,SensorA|TempA,SensorB|TempB...."
-void onGetTemps()
+void getTemps()
 {
   
-  
+  Serial.print("thermometers: [ ");
+
   byte i;
+  
   for (i = 0; i< NUM_OF_THERMOMETERS -1 ;i ++)
   {
     if (thermometersActive[i])
@@ -318,130 +303,30 @@ void onGetTemps()
       printKeyValue("id", sizeof(i), (char*)&i, false);
       printKeyValue("temp", sizeof(sensors.getTempF(thermometers[i]), (char*)&sensors.getTempF(thermometers[i]), false);
       printAlarmInfoByIndex(i);
-
-printKeyValue("sensor", sizeof(sensors.getTempF(thermometers[i]), (char*)&sensors.getTempF(thermometers[i]), false);
-
-
+	        	  
       Serial.print("sensor:");
       for (byte k=0; k < 8; k++)
       {
         Serial.print(thermometers[i][k], DEC);
       }
-      Serial.print(",");
+
+	  if (i == 0) {
+	     bool isRims = true;
+	     printKeyValue("isRIMS", sizeof(bool), (char*)&isRims, false);
+	  }
+
+	  if (i != NUM_OF_THERMOMETERS -2) {
+        Serial.print(",");
+	  }
     }
 
-
-
-    }
   }
 
-}
-//  Called function to send back all of the temperature probes' temperature
-void onGetTemp()
-{
-  byte i = cmdMessenger.readIntArg();
-  //cmdMessenger.sendCmdStart(ReturnTemps);
+  Serial.print(" ], ");
   
-  Serial.print("INFO@");
-  if (thermometersActive[i])
-  {
-      Serial.print("Thermometer");
-	  Serial.print(i);
-	  Serial.print("|");
-	  Serial.print(sensors.getTempF(thermometers[i]));
-    //cmdMessenger.sendCmdArg(i);
-    //cmdMessenger.sendCmdArg(sensors.getTempF(thermometers[i]));
-  }
-  else
-  {
-     Serial.print("Thermometer");
-	  Serial.print(i);
-	  Serial.print("|");
-	  Serial.print("-99");
-  }
-  
-  Serial.print(";");
-  Serial.println();
-  //cmdMessenger.sendCmdEnd();    
+
 }
 
-
-// Called function to send back specific temperature probe's temperature
-void onGetSensors()
-{
-  Serial.print("INFO@");
-  byte i;
-  for (i = 0; i< NUM_OF_THERMOMETERS -1 ;i ++)
-  {
-    if (thermometersActive[i])
-    {
-      Serial.print("ThermometerSensor");
-      Serial.print(i);
-      Serial.print("|");
-      for (byte k=0; k < 8; k++)
-      {
-        Serial.print(thermometers[i][k], DEC);
-      }
-      Serial.print(",");
-    }
-  }
-  if (thermometersActive[i])
-    {
-      Serial.print("ThermometerSensor");
-      Serial.print(i);
-      Serial.print("|");
-      for (byte k=0; k < 8; k++)
-      {
-        Serial.print(thermometers[i][k], DEC);
-      }
-      
-    }
-  Serial.println(";");
-  //cmdMessenger.sendCmdEnd();    
-}
-// Called function to send back specific temperature probe's temperature
-void onGetSensor()
-{
-  byte i = cmdMessenger.readIntArg();
-
-  //cmdMessenger.sendCmdStart(ReturnSensors);
-  Serial.print("INFO@");
-  if (thermometersActive[i])
-  {
-    Serial.print("Thermometer");
-	Serial.print(i);
-	Serial.print("|");
-    for (byte k=0; k < 8; k++)
-    {
-	  Serial.print(thermometers[i][k], HEX);
-      //cmdMessenger.sendCmdArg(thermometers[i][k]);
-    }
-  }
-  Serial.println(";");
-  //cmdMessenger.sendCmdEnd();    
-}
-
-
-// Called function to send back specific temperature probe's temperature
-void onGetTempAlarms()
-{
-   Serial.print("INFO@");
-   byte i;
-   for (i = 0; i< NUM_OF_THERMOMETERS -1 ;i ++)
-   {
-     if (thermometersActive[i])
-     {
-       printAlarmInfoByIndex(i);
-	   Serial.print(",");
-     }
-   }
-   if (thermometersActive[i])
-   {
-     printAlarmInfoByIndex(i);
-   }
-   Serial.println(";");
- 
-}
 
 // Called function to send back specific temperature probe's temperature
 void onSetTempAlarmHigh()
@@ -491,19 +376,8 @@ void onClearTempAlarms()
   }
 
 }
-// Called function to send back specific temperature probe's temperature
-void onGetTimer()
-{
-  AlarmID_t id = cmdMessenger.readIntArg(); 
-  time_t minutes = Alarm.read(id);
-  
-  Serial.print("INFO@TimerAlarm");
-  Serial.print(id);
-  Serial.print("|");
-  Serial.print(minutes);
-  Serial.println(";");
 
-}
+
 // Called function to send back specific temperature probe's temperature
 void onSetTimer()
 {
@@ -531,11 +405,9 @@ void onResetAlarm()
   TempAlarmActive = 0;
   WhichThermometerAlarmActive = 0;
   TimerAlarmActive = 0;
-
-//  Serial.println("INFO@AlarmOn|0;");
 }
 
-void onGetAlarmStatus()
+void GetAlarmStatus()
 {
   printKeyValue("tempAlarmActive", sizeof(TempAlarmActive), (char *)&TempAlarmActive, false);
   printKeyValue("timerAlarmActive", sizeof(TimerAlarmActive), (char *)&TimerAlarmActive, false);
@@ -544,42 +416,37 @@ void onGetAlarmStatus()
 
 void onStartLogging()
 {
-  // Start data acquisition
-  startAcqMillis = millis();
-  acquireData    = true;
-  Serial.println("INFO@StartLogging");
+    acquireData    = true;
 }
 
 void onStopLogging()
 {
-  // Stop data acquisition
-  acquireData    = false;
-  Serial.println("INFO@ StopLogging");
+    acquireData    = false;
 }
 
 void onSetPIDSetPoint()
 {
   SetPoint = cmdMessenger.readFloatArg();
   EEPROM.updateDouble(addressEE[addressPIDSetPoint],SetPoint);  
-  Serial.print("INFO@PIDSetPoint|");
-  Serial.print(SetPoint);
-  Serial.println(";");
+  //Serial.print("INFO@PIDSetPoint|");
+  //Serial.print(SetPoint);
+  //Serial.println(";");
 }
 void onSetPIDWindowSize()
 {
   WindowSize = cmdMessenger.readFloatArg();
   EEPROM.updateDouble(addressEE[addressPIDWindowSize],WindowSize);  
-  Serial.print("INFO@PIDWindowSize|");
-  Serial.print(WindowSize);
-  Serial.println(";");
+  //Serial.print("INFO@PIDWindowSize|");
+  //Serial.print(WindowSize);
+  //Serial.println(";");
 }
 void onSetPIDKp()
 {
   Kp = cmdMessenger.readFloatArg();
   EEPROM.updateDouble(addressEE[addressPIDKp],Kp);  
-  Serial.print("INFO@PIDKp|");
-  Serial.print(Kp);
-  Serial.println(";");
+  //Serial.print("INFO@PIDKp|");
+  //Serial.print(Kp);
+  //Serial.println(";");
   myPID.SetTunings(Kp, Ki, Kd);
 
 }
@@ -587,9 +454,9 @@ void onSetPIDKi()
 {
   Ki = cmdMessenger.readFloatArg();
   EEPROM.updateDouble(addressEE[addressPIDKi],Ki);  
-  Serial.print("INFO@PIDKi|");
-  Serial.print(Ki);
-  Serial.println(";");
+  //Serial.print("INFO@PIDKi|");
+  //Serial.print(Ki);
+  //Serial.println(";");
   myPID.SetTunings(Kp, Ki, Kd);
 }
 
@@ -597,9 +464,9 @@ void onSetPIDKd()
 {
   Kd = cmdMessenger.readFloatArg();
   EEPROM.updateDouble(addressEE[addressPIDKd],Kd);  
-  Serial.print("INFO@PIDKd|");
-  Serial.print(Kd);
-  Serial.println(";");
+  //Serial.print("INFO@PIDKd|");
+  //Serial.print(Kd);
+  //Serial.println(";");
   myPID.SetTunings(Kp, Ki, Kd);
 }
 
@@ -634,7 +501,6 @@ void onSetInitialClock()
 void onSetDebugModeOn()
 {
   DebugModeOn = cmdMessenger.readIntArg();
-  
 }
 
 // function that will be called when an alarm condition exists during DallasTemperatures::processAlarms();
@@ -643,11 +509,7 @@ void alarmHandler(uint8_t* deviceAddress)
   TempAlarmActive = 1;
   WhichThermometerAlarmActive = whichThermometer(deviceAddress);
   int alarmEn = digitalRead(TEMP_ALARM_HW_ENABLED);
-//  if (alarmEn == 1)
-  {
-    turnOnAlarm();
-  }
-
+  turnOnAlarm();
 }
 
 byte whichThermometer(DeviceAddress deviceAddress)
@@ -674,27 +536,20 @@ void timerAlarmHandler()
 {
   TimerAlarmActive = 1;
   int alarmEn = digitalRead(TIMER_ALARM_HW_ENABLED);
-//    if (alarmEn == 1)
-  {
-    turnOnAlarm();
-  }
+  
+  turnOnAlarm();
 }
 
 // function that will be called when an alarm condition exists during DallasTemperatures::processAlarms();
 void turnOnAlarm()
 {
-//  Serial.println("INFO@AlarmOn|1;");
-  //tone(ALARM_PIN, 262, 100);
   digitalWrite(ALARM_PIN, LOW);
   digitalWrite(LED_PIN, HIGH);
-
 }
 
 // function that will be called when an alarm condition exists during DallasTemperatures::processAlarms();
 void turnOffAlarm()
 {
-
-  //noTone(ALARM_PIN);
   digitalWrite(ALARM_PIN, HIGH);
   digitalWrite(LED_PIN, LOW);
 }
@@ -725,46 +580,7 @@ void printAddress(DeviceAddress deviceAddress)
   }
 }
 
-// function to print the temperature for a device
-void printTemperature(DeviceAddress deviceAddress)
-{
-  float tempC = sensors.getTempC(deviceAddress);
-  Serial.print("Temp C: ");
-  Serial.print(tempC);
-  Serial.print(" Temp F: ");
-  Serial.print(DallasTemperature::toFahrenheit(tempC));
-}
 
-void printAlarms(uint8_t deviceAddress[])
-{
-  char temp;
-  temp = sensors.getHighAlarmTemp(deviceAddress);
-  Serial.print("High Alarm: ");
-  Serial.print(DallasTemperature::toFahrenheit(temp),DEC);
-  Serial.print("F | Low Alarm: ");
-  temp = sensors.getLowAlarmTemp(deviceAddress);
-  Serial.print(DallasTemperature::toFahrenheit(temp),DEC);
-  Serial.print("F");
-}
-
-// main function to print information about a device
-void printData(DeviceAddress deviceAddress)
-{
-  Serial.print("Device Address: ");
-  printAddress(deviceAddress);
-  Serial.print(" ");
-  printTemperature(deviceAddress);
-  Serial.println();
-}
-
-void checkAlarm(DeviceAddress deviceAddress)
-{
-  if (sensors.hasAlarm(deviceAddress))
-  {
-    Serial.print("ALARM: ");
-    printData(deviceAddress);
-  }
-}
 // Returns if it has been more than interval (in ms) ago. Used for periodic actions
 bool hasExpired(unsigned long &prevTime, unsigned long interval) {
   if (  millis() - prevTime > interval ) {
@@ -773,45 +589,26 @@ bool hasExpired(unsigned long &prevTime, unsigned long interval) {
   } else     
     return false;
 }
-void printCurrentTemp(DeviceAddress deviceAddress)
-{
-  printAddress(deviceAddress);
-  printTemp(deviceAddress);
-  Serial.println();
-}
 
 
-
-void printTemp(DeviceAddress deviceAddress)
-{
-  float tempF = sensors.getTempF(deviceAddress);
-  if (tempF != DEVICE_DISCONNECTED)
-  {
-    Serial.print("Current Temp F: ");
-    Serial.print(tempF);
-  }
-  else Serial.print("DEVICE DISCONNECTED");
-  Serial.print(" ");
-}
-
-void printAlarmInfo(DeviceAddress deviceAddress)
-{
-  char temp;
-  printAddress(deviceAddress);
-  Serial.print("_HIGH|");
-
-  temp = sensors.getHighAlarmTemp(deviceAddress);
-  Serial.print(DallasTemperature::toFahrenheit(temp), DEC);
-  
-  Serial.print(",");
-
-  printAddress(deviceAddress);
-  Serial.print("_LOW|");
-
-  temp = sensors.getLowAlarmTemp(deviceAddress);
-  Serial.print(DallasTemperature::toFahrenheit(temp), DEC);
-  
-}
+//void printAlarmInfo(DeviceAddress deviceAddress)
+//{
+//  char temp;
+//  printAddress(deviceAddress);
+//  Serial.print("_HIGH|");
+//
+//  temp = sensors.getHighAlarmTemp(deviceAddress);
+//  Serial.print(DallasTemperature::toFahrenheit(temp), DEC);
+//  
+//  Serial.print(",");
+//
+//  printAddress(deviceAddress);
+//  Serial.print("_LOW|");
+//
+//  temp = sensors.getLowAlarmTemp(deviceAddress);
+//  Serial.print(DallasTemperature::toFahrenheit(temp), DEC);
+//  
+//}
 
 void printAlarmInfoByIndex(byte i)
 {
@@ -843,9 +640,11 @@ void thermometerLoopCB()
 void GetTimerStatus()
 {
 	int numAvailable = 0;
+	bool timersAdded = false;
 	time_t alarmTime;
-        Serial.print("ClearTimers:1,");
-        Serial.print("timers: [")
+    Serial.print("ClearTimers:1,");
+
+    Serial.print("timers: [")
 	 for (uint8_t i=0; i < dtNBR_ALARMS; i++)
 	 {
 		dtAlarmPeriod_t alarmPeriodType = Alarm.readType(i);
@@ -856,6 +655,11 @@ void GetTimerStatus()
 		}
 		else if (alarmPeriodType == dtTimer && Alarm.isOneShotType(i) == 1)
 		{
+           if(timersAdded == true) 
+		   {
+		     Serial.print(",");
+		   }
+
 		   alarmTime = Alarm.getNextTrigger(i); 
 		   Serial.print("'");
 		   Serial.print(hour(alarmTime));
@@ -866,13 +670,15 @@ void GetTimerStatus()
 		   Serial.print("'");
 		}
 	 }
-         Serial.print("],")
-	 Serial.print("TimersNotAllocated|");
+     Serial.print("],")
+
+	 Serial.print("TimersNotAllocated:");
 	 Serial.print(numAvailable);
-	 Serial.println(";");
-	 Serial.print("TotalTimers|");
+	 Serial.print(",");
+
+	 Serial.print("TotalTimers:");
 	 Serial.print(dtNBR_ALARMS);
-	 Serial.println(";");
+	 Serial.print(",");
 }
 
 //void sendDataLogingCB()
@@ -955,7 +761,8 @@ void processIncomingSerial()
 // Setup function
 void setup() 
 {
-  bool didNotFindAllSensors = true;
+  bool didNotFindAllSensors = false;
+  bool didNotFindOneSensor = true;
   pinMode(LED_PIN, OUTPUT);
   digitalWrite(PUMP_PIN, HIGH);
   digitalWrite(AUX_PIN, HIGH);
@@ -988,48 +795,47 @@ void setup()
   // Attach my application's user-defined callback methods
   attachCommandCallbacks();
 
-
-  
-    didNotFindAllSensors = false;
-    // ----------- DALLAS ONE WIRE----------------------
-    // start up the library 
-    sensors.begin();
     
-    delay(750);
+  // ----------- DALLAS ONE WIRE----------------------
+  // start up the library 
+  sensors.begin();
   
-    // search for temperature devices on the bus, initialize their alarms
-    for (byte i=0; i < NUM_OF_THERMOMETERS; i++)
-    {
-      thermometersActive[i] = true;
-      if (!sensors.getAddress(thermometers[i], i)) 
-  	{    
-	    Serial.print("NoAddress|"); 
-	    Serial.print(i);
-	    Serial.println(";");
-            thermometersActive[i] = false;
-	    didNotFindAllSensors = true;
-            continue;
+  delay(750);
+  
+  // search for temperature devices on the bus, initialize their alarms
+  for (byte i=0; i < NUM_OF_THERMOMETERS; i++)
+  {
+    thermometersActive[i] = true;
+    if (!sensors.getAddress(thermometers[i], i)) 
+    {    
+	    // Serial.print("NoAddress|"); 
+	    // Serial.print(i);
+	    // Serial.println(";");
+         thermometersActive[i] = false;
+	     didNotFindAllSensors = true;
+         continue;
+	}	
+	else 
+	{
+	    didNotFindOneSensors = false;
 	}
 
-
-      // alarm when temp is higher than max
-      //sensors.setHighAlarmTemp(thermometers[i], 125);
-    
-      // alarm when temp is lower than min
-      //sensors.setLowAlarmTemp(thermometers[i], -10);
-
-	// alarmHandler() will get called when a thermometer low/high alarm
-	// is met.
-      sensors.setAlarmHandler(&alarmHandler);
-    
-    
-    } // for
-   
+	     
+    sensors.setAlarmHandler(&alarmHandler);
   
-  Serial.print("ParasitePower|"); 
-  if (sensors.isParasitePowerMode()) Serial.println("ON;");
-  else Serial.println("OFF;");
+  } // for
   
+
+  if (didNotFindAllSensors == true){
+    Serial.println("{noSensors: true}";
+  }
+
+  
+  //Serial.print("ParasitePower|"); 
+  //if (sensors.isParasitePowerMode()) Serial.println("ON;");
+  //else Serial.println("OFF;");
+  //
+
   setEEPromAddress();
   updateLocalFromEEPROM();
   setupPID();
@@ -1041,9 +847,7 @@ void setup()
   
   
   Alarm.timerRepeat(1,thermometerLoopCB); 
-  
-
-}
+  }
 
 
 
@@ -1052,20 +856,11 @@ void setup()
 // -------------------------------------------------
 void loop() 
 {
-
-//   if (millis() - windowStartTime > (WindowSize / 2.0))
-//   {
-//     thermometerLoopCB();
-//     Input = sensors.getTempF(thermometers[rimsThermoNumber]);
-//   }
-   
    
    if (RimsEnable)
    {
    
         myPID.Compute();  
-      //Input = sensors.getTempF(thermometers[rimsThermoNumber]);
-//      myPID.Compute();
     
     /************************************************
      * turn the output pin on/off based on pid output
@@ -1081,6 +876,6 @@ void loop()
   {
     digitalWrite(SSR_PIN,LOW);
   }
-  //Alarm.delay(125);
+
   Alarm.delay(1);
 } 
