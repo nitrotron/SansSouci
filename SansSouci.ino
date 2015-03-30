@@ -844,7 +844,8 @@ void GetTimerStatus()
 {
 	int numAvailable = 0;
 	time_t alarmTime;
-        Serial.println("ClearTimers|1;");
+        Serial.print("ClearTimers:1,");
+        Serial.print("timers: [")
 	 for (uint8_t i=0; i < dtNBR_ALARMS; i++)
 	 {
 		dtAlarmPeriod_t alarmPeriodType = Alarm.readType(i);
@@ -856,17 +857,16 @@ void GetTimerStatus()
 		else if (alarmPeriodType == dtTimer && Alarm.isOneShotType(i) == 1)
 		{
 		   alarmTime = Alarm.getNextTrigger(i); 
-		   Serial.print("Timer");
-		   Serial.print(i);
-		   Serial.print("|");
+		   Serial.print("'");
 		   Serial.print(hour(alarmTime));
-           Serial.print(":");
+                   Serial.print(":");
 		   Serial.print(minute(alarmTime));
 		   Serial.print(":");
 		   Serial.print(second(alarmTime));
-		   Serial.println(";");
+		   Serial.print("'");
 		}
 	 }
+         Serial.print("],")
 	 Serial.print("TimersNotAllocated|");
 	 Serial.print(numAvailable);
 	 Serial.println(";");
