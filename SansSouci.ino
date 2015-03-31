@@ -139,8 +139,7 @@ void attachCommandCallbacks()
 {
   // Attach callback methods
   cmdMessenger.attach(onReturnUnknownCmd);                                 
-  cmdMessenger.attach(ReturnStatus,           onReturnStatus);				
-  cmdMessenger.attach(GetTempAlarms,  		  onGetTempAlarms);				
+  cmdMessenger.attach(ReturnStatus,           onReturnStatus);					
   cmdMessenger.attach(SetTempAlarmHigh,  	  onSetTempAlarmHigh);			
   cmdMessenger.attach(SetTempAlarmLow,  	  onSetTempAlarmLow);			
   cmdMessenger.attach(ClearTempAlarms,  	  onClearTempAlarms);			
@@ -237,9 +236,9 @@ void onReturnStatus()
  // String printMsg;
 
   Serial.print("{");
-  GetTemps();
-  GetAlarmStatus();
-  GetTimerStatus();
+  getTemps();
+  getAlarmStatus();
+  getTimerStatus();
   
   printKeyValue("PumpOn", sizeof(PumpOn), (char*)&PumpOn, false);
   printKeyValue("AuxOn", sizeof(AuxOn), (char *)&AuxOn, false);
@@ -407,7 +406,7 @@ void onResetAlarm()
   TimerAlarmActive = 0;
 }
 
-void GetAlarmStatus()
+void getAlarmStatus()
 {
   printKeyValue("tempAlarmActive", sizeof(TempAlarmActive), (char *)&TempAlarmActive, false);
   printKeyValue("timerAlarmActive", sizeof(TimerAlarmActive), (char *)&TimerAlarmActive, false);
@@ -637,7 +636,7 @@ void thermometerLoopCB()
   Input = sensors.getTempF(thermometers[rimsThermoNumber]);
 }
 
-void GetTimerStatus()
+void getTimerStatus()
 {
 	int numAvailable = 0;
 	bool timersAdded = false;
