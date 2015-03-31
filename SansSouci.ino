@@ -294,13 +294,15 @@ void getTemps()
   Serial.print("thermometers: [ ");
 
   byte i;
+  double temp;
   
   for (i = 0; i< NUM_OF_THERMOMETERS -1 ;i ++)
   {
     if (thermometersActive[i])
     {
       printKeyValue("id", sizeof(i), (char*)&i, false);
-      printKeyValue("temp", sizeof(sensors.getTempF(thermometers[i]), (char*)&sensors.getTempF(thermometers[i]), false);
+      temp = sensors.getTempF(thermometers[i]);
+      printKeyValue("temp", sizeof(temp), (char*)&temp, false);
       printAlarmInfoByIndex(i);
 	        	  
       Serial.print("sensor:");
@@ -309,7 +311,7 @@ void getTemps()
         Serial.print(thermometers[i][k], DEC);
       }
 
-	  if (i == 0) {
+	  if (i == rimsThermoNumber) {
 	     bool isRims = true;
 	     printKeyValue("isRIMS", sizeof(bool), (char*)&isRims, false);
 	  }
@@ -410,7 +412,7 @@ void getAlarmStatus()
 {
   printKeyValue("tempAlarmActive", sizeof(TempAlarmActive), (char *)&TempAlarmActive, false);
   printKeyValue("timerAlarmActive", sizeof(TimerAlarmActive), (char *)&TimerAlarmActive, false);
-  printKeyValue("whichThermoAlarm", sizeof(WhichThermoAlarm), (char *)&WhichThermoAlarm, false);  
+  printKeyValue("whichThermoAlarm", sizeof(WhichThermometerAlarmActive), (char *)&WhichThermometerAlarmActive, false);  
 }
 
 void onStartLogging()
@@ -641,9 +643,9 @@ void getTimerStatus()
 	int numAvailable = 0;
 	bool timersAdded = false;
 	time_t alarmTime;
-    Serial.print("ClearTimers:1,");
-
-    Serial.print("timers: [")
+  
+        Serial.print("ClearTimers:1,");
+        Serial.print("timers: [");
 	 for (uint8_t i=0; i < dtNBR_ALARMS; i++)
 	 {
 		dtAlarmPeriod_t alarmPeriodType = Alarm.readType(i);
@@ -669,7 +671,7 @@ void getTimerStatus()
 		   Serial.print("'");
 		}
 	 }
-     Serial.print("],")
+         Serial.print("],");
 
 	 Serial.print("TimersNotAllocated:");
 	 Serial.print(numAvailable);
@@ -816,7 +818,7 @@ void setup()
 	}	
 	else 
 	{
-	    didNotFindOneSensors = false;
+	    didNotFindOneSensor = false;
 	}
 
 	     
@@ -826,7 +828,7 @@ void setup()
   
 
   if (didNotFindAllSensors == true){
-    Serial.println("{noSensors: true}";
+    Serial.println("{noSensors: true}");
   }
 
   
