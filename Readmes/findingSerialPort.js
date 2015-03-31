@@ -7,3 +7,7 @@ serialport.list(function (err, ports) {
     console.log(port.comName);
   });
 });
+
+
+https://github.com/nitrotron/physcomp.git
+https://github.com/ITPNYU/physcomp.git
