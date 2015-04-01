@@ -220,7 +220,8 @@ void onReturnUnknownCmd()
 
 void printKeyValue( const char *key, uint8_t valLen, const char *val, bool lastOfList)
 {
-//  uint8_t message[keyLen+valLen+3];
+  //uint8_t message[keyLen+valLen+3];
+  
   
   Serial.print(key);
   Serial.print(':');
@@ -238,15 +239,16 @@ void onReturnStatus()
   Serial.print("{");
   getTemps();
   getAlarmStatus();
+//Serial.print("tempAlarmActive", sizeof(TempAlarmActive), (char *)&TempAlarmActive, false);
   getTimerStatus();
   
-  printKeyValue("PumpOn", sizeof(PumpOn), (char*)&PumpOn, false);
-  printKeyValue("AuxOn", sizeof(AuxOn), (char *)&AuxOn, false);
-  printKeyValue("RimsEnable", sizeof(RimsEnable), (char *)&RimsEnable, false);
-  Serial.print("ArduinoTime:");
+  Serial.print("PumpOn: "); Serial.print(PumpOn); Serial.print(", ");
+  Serial.print("AuxOn: "); Serial.print(AuxOn); Serial.print(", ");
+  Serial.print("RimsEnable: "); Serial.print(RimsEnable); Serial.print(", ");
+  Serial.print("ArduinoTime: ");
   Serial.print(now());
   Serial.println(",");
-  Serial.print("ArduinoTimeLong:\"");
+  Serial.print("ArduinoTimeLong: '");
   Serial.print(hour());
   printDigits(minute());
   printDigits(second());
@@ -256,17 +258,17 @@ void onReturnStatus()
   Serial.print(month());
   Serial.print("/");
   Serial.print(year()); 
-  Serial.println("\","); 
-  printKeyValue("SetPoint", sizeof(SetPoint), (char *)&SetPoint, false);
-  printKeyValue("SetPoint", sizeof(SetPoint), (char *)&SetPoint, false);  
-  printKeyValue("Kp", sizeof(Kp), (char *)&Kp, false);
-  printKeyValue("Ki", sizeof(Ki), (char *)&Ki, false);
-  printKeyValue("Kd", sizeof(Kd), (char *)&Kd, false);
-  printKeyValue("Output", sizeof(Output), (char *)&Output, false);
+  Serial.println("', "); 
+  Serial.print("SetPoint: "); Serial.print(SetPoint); Serial.print(", ");
+  Serial.print("SetPoint: "); Serial.print(SetPoint); Serial.print(", ");  
+  Serial.print("Kp:"); Serial.print(Kp); Serial.print(", ");
+  Serial.print("Ki:"); Serial.print(Ki); Serial.print(", ");
+  Serial.print("Kd:"); Serial.print(Kd); Serial.print(", ");
+  Serial.print("Output: "); Serial.print(Output); Serial.print(", ");
   Serial.print("millis:");
   Serial.print(millis());
   Serial.print(",");
-  printKeyValue("windowStartTime", sizeof(windowStartTime), (char *)&windowStartTime, false);
+  Serial.print("windowStartTime:"); Serial.print(windowStartTime); Serial.print(", ");
   Serial.print("OutputTime:");
   Serial.print(millis()-windowStartTime);
 
