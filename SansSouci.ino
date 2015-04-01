@@ -242,13 +242,13 @@ void onReturnStatus()
 //Serial.print("tempAlarmActive", sizeof(TempAlarmActive), (char *)&TempAlarmActive, false);
   getTimerStatus();
   
-  Serial.print("PumpOn: "); Serial.print(PumpOn); Serial.print(", ");
-  Serial.print("AuxOn: "); Serial.print(AuxOn); Serial.print(", ");
-  Serial.print("RimsEnable: "); Serial.print(RimsEnable); Serial.print(", ");
-  Serial.print("ArduinoTime: ");
+  Serial.print("\"PumpOn\": "); Serial.print(PumpOn); Serial.print(", ");
+  Serial.print("\"AuxOn\": "); Serial.print(AuxOn); Serial.print(", ");
+  Serial.print("\"RimsEnable\": "); Serial.print(RimsEnable); Serial.print(", ");
+  Serial.print("\"ArduinoTime\": ");
   Serial.print(now());
   Serial.println(",");
-  Serial.print("ArduinoTimeLong: '");
+  Serial.print("\"ArduinoTimeLong\": \"");
   Serial.print(hour());
   printDigits(minute());
   printDigits(second());
@@ -258,18 +258,19 @@ void onReturnStatus()
   Serial.print(month());
   Serial.print("/");
   Serial.print(year()); 
-  Serial.println("', "); 
-  Serial.print("SetPoint: "); Serial.print(SetPoint); Serial.print(", ");
-  Serial.print("SetPoint: "); Serial.print(SetPoint); Serial.print(", ");  
-  Serial.print("Kp:"); Serial.print(Kp); Serial.print(", ");
-  Serial.print("Ki:"); Serial.print(Ki); Serial.print(", ");
-  Serial.print("Kd:"); Serial.print(Kd); Serial.print(", ");
-  Serial.print("Output: "); Serial.print(Output); Serial.print(", ");
-  Serial.print("millis:");
+  Serial.println("\","); 
+  Serial.print("\"setPoint\": "); Serial.print(SetPoint); Serial.print(", ");
+  Serial.print("\"windowSize\": "); Serial.print(WindowSize); Serial.print(", ");
+  
+  Serial.print("\"Kp\":"); Serial.print(Kp); Serial.print(", ");
+  Serial.print("\"Ki\":"); Serial.print(Ki); Serial.print(", ");
+  Serial.print("\"Kd\":"); Serial.print(Kd); Serial.print(", ");
+  Serial.print("\"Output\": "); Serial.print(Output); Serial.print(", ");
+  Serial.print("\"millis\":");
   Serial.print(millis());
   Serial.print(",");
-  Serial.print("windowStartTime:"); Serial.print(windowStartTime); Serial.print(", ");
-  Serial.print("OutputTime:");
+  Serial.print("\"windowStartTime\":"); Serial.print(windowStartTime); Serial.print(", ");
+  Serial.print("\"OutputTime\":");
   Serial.print(millis()-windowStartTime);
 
   Serial.println("}");
@@ -302,29 +303,30 @@ void getTemps()
   {
     if (thermometersActive[i])
     {
-//      printKeyValue("id", sizeof(i), (char*)&i, false);
-      Serial.print("id:"); Serial.print(i); Serial.print(",");
+	  Serial.print("{");
+	  Serial.print("\"id\":"); Serial.print(i); Serial.print(",");
       temp = sensors.getTempF(thermometers[i]);
-//      printKeyValue("temp", sizeof(temp), (char*)&temp, false);
-      Serial.print("temp:"); Serial.print(temp); Serial.print(",");
+
+      Serial.print("\"temp\":"); Serial.print(temp); Serial.print(",");
       printAlarmInfoByIndex(i);
 	        	  
-      Serial.print("sensor:");
+      Serial.print("\"sensor\":");
       for (byte k=0; k < 8; k++)
       {
         Serial.print(thermometers[i][k], DEC);
       }
-      Serial.print(",");
+      
 
       if (i == rimsThermoNumber) {
         bool isRims = true;
-//	printKeyValue("isRIMS", sizeof(bool), (char*)&isRims, false);
-        Serial.print("isRims:"); Serial.print(isRims); Serial.print(",");
+        Serial.print(",\"isRims\":"); Serial.print(isRims); Serial.print(",");
       }
 
+      Serial.print("}");
       if (i != NUM_OF_THERMOMETERS -2) {
         Serial.print(",");
       }
+	  
     }
 
   }
@@ -419,9 +421,9 @@ void getAlarmStatus()
 //  printKeyValue("tempAlarmActive", sizeof(TempAlarmActive), (char *)&TempAlarmActive, false);
 //  printKeyValue("timerAlarmActive", sizeof(TimerAlarmActive), (char *)&TimerAlarmActive, false);
 //  printKeyValue("whichThermoAlarm", sizeof(WhichThermometerAlarmActive), (char *)&WhichThermometerAlarmActive, false);  
-  Serial.print("tempAlarmActive:"); Serial.print(TempAlarmActive); Serial.print(",");
-  Serial.print("timerAlarmActive:"); Serial.print(TimerAlarmActive); Serial.print(",");
-  Serial.print("whichThermoAlarm:"); Serial.print(WhichThermometerAlarmActive); Serial.print(",");
+  Serial.print("\"tempAlarmActive\":"); Serial.print(TempAlarmActive); Serial.print(",");
+  Serial.print("\"timerAlarmActive\":"); Serial.print(TimerAlarmActive); Serial.print(",");
+  Serial.print("\"whichThermoAlarm\":"); Serial.print(WhichThermometerAlarmActive); Serial.print(",");
 }
 
 void onStartLogging()
@@ -603,12 +605,12 @@ bool hasExpired(unsigned long &prevTime, unsigned long interval) {
 void printAlarmInfoByIndex(byte i)
 {
   char temp;
-  Serial.print("highAlarm:");
+  Serial.print("\"highAlarm\":");
   temp = sensors.getHighAlarmTemp(thermometers[i]);
   Serial.print(DallasTemperature::toFahrenheit(temp), DEC);  
   Serial.print(",");
 
-  Serial.print("lowAlarm:");
+  Serial.print("\"lowAlarm\":");
   temp = sensors.getLowAlarmTemp(thermometers[i]);
   Serial.print(DallasTemperature::toFahrenheit(temp), DEC);
   Serial.print(","); 
@@ -629,20 +631,26 @@ void thermometerLoopCB()
 
 void sendDataLogingCB()
 {
-  Serial.print("{DATALOGGING: {");
-  int i;
-  double temp;
-  for (i = 0; i< NUM_OF_THERMOMETERS -1 ;i ++)
-  {
-    if (thermometersActive[i])
-    {
-      temp = sensors.getTempF(thermometers[i]);
-      Serial.print("temp:"); Serial.print(temp); Serial.print(",");
-    }
+  if (acquireData == true) {
+      int i;
+	  double temp
+	  Serial.print("{\"DATALOGGING\": {");
+	  ;
+	  for (i = 0; i< NUM_OF_THERMOMETERS -1 ;i ++)
+	  {
+	    if (thermometersActive[i])
+	    {
+		  if (i != 0) {
+		  Serial.print(",");
+		  }
+	      temp = sensors.getTempF(thermometers[i]);
+	      Serial.print("\"temp\":"); Serial.print(temp); 
+	    }
+	  }
+	  
+	  
+	  Serial.println("} }");
   }
-  
-  
-  Serial.println("} }");
 }
 
 void getTimerStatus()
@@ -651,8 +659,8 @@ void getTimerStatus()
 	bool timersAdded = false;
 	time_t alarmTime;
   
-        Serial.print("ClearTimers:1,");
-        Serial.print("timers: [");
+        Serial.print("\"ClearTimers\":1,");
+        Serial.print("\"timers\": [");
 	 for (uint8_t i=0; i < dtNBR_ALARMS; i++)
 	 {
 		dtAlarmPeriod_t alarmPeriodType = Alarm.readType(i);
@@ -669,22 +677,22 @@ void getTimerStatus()
 		   }
 
 		   alarmTime = Alarm.getNextTrigger(i); 
-		   Serial.print("'");
+		   Serial.print("\"");
 		   Serial.print(hour(alarmTime));
                    Serial.print(":");
 		   Serial.print(minute(alarmTime));
 		   Serial.print(":");
 		   Serial.print(second(alarmTime));
-		   Serial.print("'");
+		   Serial.print("\"");
 		}
 	 }
          Serial.print("],");
 
-	 Serial.print("TimersNotAllocated:");
+	 Serial.print("\"TimersNotAllocated\":");
 	 Serial.print(numAvailable);
 	 Serial.print(",");
 
-	 Serial.print("TotalTimers:");
+	 Serial.print("\"TotalTimers\":");
 	 Serial.print(dtNBR_ALARMS);
 	 Serial.print(",");
 }
