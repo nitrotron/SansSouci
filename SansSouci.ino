@@ -218,18 +218,18 @@ void onReturnUnknownCmd()
 }
 
 
-void printKeyValue( const char *key, uint8_t valLen, const char *val, bool lastOfList)
-{
-  //uint8_t message[keyLen+valLen+3];
-  
-  
-  Serial.print(key);
-  Serial.print(':');
-  Serial.print(val);
-  if (lastOfList == false) {
-    Serial.print(',');
-  }
-}
+//void printKeyValue( const char *key, uint8_t valLen, const char *val, bool lastOfList)
+//{
+//  //uint8_t message[keyLen+valLen+3];
+//  
+//  
+//  Serial.print(key);
+//  Serial.print(':');
+//  Serial.print(val);
+//  if (lastOfList == false) {
+//    Serial.print(',');
+//  }
+//}
 
 //Used to provide general status()
 void onReturnStatus()
@@ -302,9 +302,11 @@ void getTemps()
   {
     if (thermometersActive[i])
     {
-      printKeyValue("id", sizeof(i), (char*)&i, false);
+//      printKeyValue("id", sizeof(i), (char*)&i, false);
+      Serial.print("id:"); Serial.print(i); Serial.print(",");
       temp = sensors.getTempF(thermometers[i]);
-      printKeyValue("temp", sizeof(temp), (char*)&temp, false);
+//      printKeyValue("temp", sizeof(temp), (char*)&temp, false);
+      Serial.print("temp:"); Serial.print(temp); Serial.print(",");
       printAlarmInfoByIndex(i);
 	        	  
       Serial.print("sensor:");
@@ -312,15 +314,17 @@ void getTemps()
       {
         Serial.print(thermometers[i][k], DEC);
       }
+      Serial.print(",");
 
-	  if (i == rimsThermoNumber) {
-	     bool isRims = true;
-	     printKeyValue("isRIMS", sizeof(bool), (char*)&isRims, false);
-	  }
+      if (i == rimsThermoNumber) {
+        bool isRims = true;
+//	printKeyValue("isRIMS", sizeof(bool), (char*)&isRims, false);
+        Serial.print("isRims:"); Serial.print(isRims); Serial.print(",");
+      }
 
-	  if (i != NUM_OF_THERMOMETERS -2) {
+      if (i != NUM_OF_THERMOMETERS -2) {
         Serial.print(",");
-	  }
+      }
     }
 
   }
@@ -412,9 +416,12 @@ void onResetAlarm()
 
 void getAlarmStatus()
 {
-  printKeyValue("tempAlarmActive", sizeof(TempAlarmActive), (char *)&TempAlarmActive, false);
-  printKeyValue("timerAlarmActive", sizeof(TimerAlarmActive), (char *)&TimerAlarmActive, false);
-  printKeyValue("whichThermoAlarm", sizeof(WhichThermometerAlarmActive), (char *)&WhichThermometerAlarmActive, false);  
+//  printKeyValue("tempAlarmActive", sizeof(TempAlarmActive), (char *)&TempAlarmActive, false);
+//  printKeyValue("timerAlarmActive", sizeof(TimerAlarmActive), (char *)&TimerAlarmActive, false);
+//  printKeyValue("whichThermoAlarm", sizeof(WhichThermometerAlarmActive), (char *)&WhichThermometerAlarmActive, false);  
+  Serial.print("tempAlarmActive:"); Serial.print(TempAlarmActive); Serial.print(",");
+  Serial.print("timerAlarmActive:"); Serial.print(TimerAlarmActive); Serial.print(",");
+  Serial.print("whichThermoAlarm:"); Serial.print(WhichThermometerAlarmActive); Serial.print(",");
 }
 
 void onStartLogging()
@@ -593,26 +600,6 @@ bool hasExpired(unsigned long &prevTime, unsigned long interval) {
     return false;
 }
 
-
-//void printAlarmInfo(DeviceAddress deviceAddress)
-//{
-//  char temp;
-//  printAddress(deviceAddress);
-//  Serial.print("_HIGH|");
-//
-//  temp = sensors.getHighAlarmTemp(deviceAddress);
-//  Serial.print(DallasTemperature::toFahrenheit(temp), DEC);
-//  
-//  Serial.print(",");
-//
-//  printAddress(deviceAddress);
-//  Serial.print("_LOW|");
-//
-//  temp = sensors.getLowAlarmTemp(deviceAddress);
-//  Serial.print(DallasTemperature::toFahrenheit(temp), DEC);
-//  
-//}
-
 void printAlarmInfoByIndex(byte i)
 {
   char temp;
@@ -638,6 +625,24 @@ void thermometerLoopCB()
   
   //update the RIMS input
   Input = sensors.getTempF(thermometers[rimsThermoNumber]);
+}
+
+void sendDataLogingCB()
+{
+  Serial.print("{DATALOGGING: {");
+  int i;
+  double temp;
+  for (i = 0; i< NUM_OF_THERMOMETERS -1 ;i ++)
+  {
+    if (thermometersActive[i])
+    {
+      temp = sensors.getTempF(thermometers[i]);
+      Serial.print("temp:"); Serial.print(temp); Serial.print(",");
+    }
+  }
+  
+  
+  Serial.println("} }");
 }
 
 void getTimerStatus()
@@ -684,70 +689,6 @@ void getTimerStatus()
 	 Serial.print(",");
 }
 
-//void sendDataLogingCB()
-//{
-//  if (acquireData)
-//  {
-//    for (byte i=0; i < NUM_OF_THERMOMETERS; i++)
-//    {
-//      float tempF = sensors.getTempF(thermometers[i]);
-//	  if (tempF != DEVICE_DISCONNECTED)
-//	  {
-//	    Serial.print("DB_WRITE@Device|");
-//	    Serial.print(i);
-//	    Serial.print(",Temperature|");
-//	    Serial.print(tempF);
-//	    Serial.print(",TimeDiff|");
-//	  }
-//	}
-//  }
-//}
-
-//void printTimerNextTrigger()
-//{
-//  Serial.println("================= Print Timer Next Trigger ======================");
-//  time_t nextTrigger = Alarm.getNextTrigger();
-//  time_t nowT = Alarm.getDigitsNow(dtSecond);
-//  time_t whenTrigger = nextTrigger - nowT;
-//  Serial.print("INFO@ The next Timer/Alarm to trigger is in ");
-//  Serial.print(whenTrigger);
-//  Serial.print(" seconds;");
-//  Serial.print(" Now=");
-//  Serial.print(nowT);
-//  Serial.print("; nextTrigger=");
-//  Serial.print(nextTrigger);
-//  Serial.println();
-//}
-
-//void  printDTNotAllocated(uint8_t timer)
-//{
-//  Serial.print("INFO@ Timer/Alarm"); 
-//  Serial.print(timer);
-//  Serial.print(" not allocated");
-//  Serial.println();
-//}
-//void  printDTTimer(uint8_t timer)
-//{
-//  time_t alarmTime = Alarm.read(timer);
-//  
-//  Serial.print("INFO@ Timer"); 
-//  Serial.print(timer);
-//  Serial.print(" set to:");
-//
-//  Serial.print(alarmTime);
-//  Serial.println();
-//}
-//void  printDTAlarm(uint8_t timer)
-//{
-//  time_t alarmTime = Alarm.read(timer);
-//  
-//  Serial.print("INFO@ Alarm"); 
-//  Serial.print(timer);
-//  Serial.print(" set to:");
-//
-//  Serial.print(alarmTime);
-//  Serial.println();
-//}
 
 // Process incoming serial data, and perform callbacks
 void processIncomingSerial()
@@ -844,7 +785,7 @@ void setup()
   setupPID();
 
   //Alarm.timerRepeat(1, thermometerLoopCB);  // processes alarms & thermometers every 15 seconds.
-  //Alarm.timerRepeat(sampleInterval, sendDataLogingCB);
+  Alarm.timerRepeat(sampleInterval, sendDataLogingCB);
   Alarm.timerRepeat(10, onReturnStatus );
   Alarm.timerRepeat(1, processIncomingSerial);
   
