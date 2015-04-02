@@ -303,7 +303,7 @@ void getTemps()
 
       if (i == rimsThermoNumber) {
         bool isRims = true;
-        Serial.print(",\"isRims\":"); Serial.print(isRims); Serial.print(",");
+        Serial.print(",\"isRims\":"); Serial.print(isRims); 
       }
 
       Serial.print("}");
@@ -621,7 +621,7 @@ void sendDataLogingCB()
           Serial.print(",");
         }
         temp = sensors.getTempF(thermometers[i]);
-        Serial.print("\"temp\":"); Serial.print(temp); 
+        Serial.print("\"temp"); Serial.print(i); Serial.print("\":"); Serial.print(temp); 
       }
     }  
     Serial.println("} }");
