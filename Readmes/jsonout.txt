@@ -1,9 +1,65 @@
-{thermometers: [ id:0,temp:61.14,highAlarm:32.0000000000,lowAlarm:32.0000000000,sensor:4032169102500196,,id:1,temp:61.81,highAlarm:32.0000000000,lowAlarm:32.0000000000,sensor:40118328050033,,id:2,temp:61.03,highAlarm:32.0000000000,lowAlarm:32.0000000000,sensor:401711538050019, ], tempAlarmActive:1,timerAlarmActive:0,whichThermoAlarm:3,ClearTimers:1,timers: [],TimersNotAllocated:8,TotalTimers:12,PumpOn: 0, AuxOn: 0, RimsEnable: 0, ArduinoTime: 3,
-ArduinoTimeLong: '0:00:03 1/1/1970', 
-SetPoint: 100.00, SetPoint: 100.00, Kp:nan, Ki:nan, Kd:nan, Output: 0.00, millis:3526,windowStartTime:1395, OutputTime:2170}
-{thermometers: [ id:0,temp:61.25,highAlarm:32.0000000000,lowAlarm:32.0000000000,sensor:4032169102500196,,id:1,temp:61.93,highAlarm:32.0000000000,lowAlarm:32.0000000000,sensor:40118328050033,,id:2,temp:61.03,highAlarm:32.0000000000,lowAlarm:32.0000000000,sensor:401711538050019, ], tempAlarmActive:1,timerAlarmActive:0,whichThermoAlarm:3,ClearTimers:1,timers: [],TimersNotAllocated:8,TotalTimers:12,PumpOn: 0, AuxOn: 0, RimsEnable: 0, ArduinoTime: 11,
-ArduinoTimeLong: '0:00:11 1/1/1970', 
-SetPoint: 100.00, SetPoint: 100.00, Kp:nan, Ki:nan, Kd:nan, Output: 0.00, millis:11528,windowStartTime:1395, OutputTime:10173}
-{thermometers: [ id:0,temp:61.36,highAlarm:32.0000000000,lowAlarm:32.0000000000,sensor:4032169102500196,,id:1,temp:61.93,highAlarm:32.0000000000,lowAlarm:32.0000000000,sensor:40118328050033,,id:2,temp:61.14,highAlarm:32.0000000000,lowAlarm:32.0000000000,sensor:401711538050019, ], tempAlarmActive:1,timerAlarmActive:0,whichThermoAlarm:3,ClearTimers:1,timers: [],TimersNotAllocated:8,TotalTimers:12,PumpOn: 0, AuxOn: 0, RimsEnable: 0, ArduinoTime: 21,
-ArduinoTimeLong: '0:00:21 1/1/1970', 
-SetPoint: 100.00, SetPoint: 100.00, Kp:nan, Ki:nan, Kd:nan, Output: 0.00, millis:21527,windowStartTime:1395, OutputTime:20172}
+{  
+   "DATALOGGING":{  
+      "temp0":64.06,
+      "temp1":63.95,
+      "temp2":62.82,
+      "temp3":63.50
+   }
+}
+
+{  
+   "thermometers":[  
+      {  
+         "id":0,
+         "temp":63.50,
+         "highAlarm":32.0000000000,
+         "lowAlarm":32.0000000000,
+         "sensor":4032169102500196
+      },
+      {  
+         "id":1,
+         "temp":63.95,
+         "highAlarm":32.0000000000,
+         "lowAlarm":32.0000000000,
+         "sensor":40118328050033
+      },
+      {  
+         "id":2,
+         "temp":62.82,
+         "highAlarm":32.0000000000,
+         "lowAlarm":32.0000000000,
+         "sensor":401711538050019
+      },
+      {  
+         "id":3,
+         "temp":63.39,
+         "highAlarm":32.0000000000,
+         "lowAlarm":32.0000000000,
+         "sensor":4023116618150056,
+         "isRims":1
+      }
+   ],
+   "tempAlarmActive":0,
+   "timerAlarmActive":0,
+   "whichThermoAlarm":0,
+   "clearTimers":1,
+   "timers":[  
+
+   ],
+   "timersNotAllocated":8,
+   "totalTimers":12,
+   "pumpOn":0,
+   "auxOn":0,
+   "rimsEnable":0,
+   "arduinoTime":2,
+   "arduinoTimeLong":"0:00:02 1/1/1970",
+   "setPoint":100.00,
+   "windowSize":0,
+   "kp":2.00,
+   "ki":5.00,
+   "kd":1.00,
+   "output":0.00,
+   "millis":2715,
+   "windowStartTime":1395,
+   "outputTime":1364
+}
