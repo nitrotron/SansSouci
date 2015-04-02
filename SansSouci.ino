@@ -231,7 +231,7 @@ void onReturnStatus()
   Serial.print("\"rimsEnable\": "); Serial.print(RimsEnable); Serial.print(", ");
   Serial.print("\"arduinoTime\": ");
   Serial.print(now());
-  Serial.println(",");
+  Serial.print(",");
   Serial.print("\"arduinoTimeLong\": \"");
   Serial.print(hour());
   printDigits(minute());
@@ -242,7 +242,7 @@ void onReturnStatus()
   Serial.print(month());
   Serial.print("/");
   Serial.print(year()); 
-  Serial.println("\","); 
+  Serial.print("\","); 
   Serial.print("\"setPoint\": "); Serial.print(SetPoint); Serial.print(", ");
   Serial.print("\"windowSize\": "); Serial.print(WindowSize); Serial.print(", ");
   
@@ -421,25 +421,16 @@ void onSetPIDSetPoint()
 {
   SetPoint = cmdMessenger.readFloatArg();
   EEPROM.updateDouble(addressEE[addressPIDSetPoint],SetPoint);  
-  //Serial.print("INFO@PIDSetPoint|");
-  //Serial.print(SetPoint);
-  //Serial.println(";");
 }
 void onSetPIDWindowSize()
 {
   WindowSize = cmdMessenger.readFloatArg();
   EEPROM.updateDouble(addressEE[addressPIDWindowSize],WindowSize);  
-  //Serial.print("INFO@PIDWindowSize|");
-  //Serial.print(WindowSize);
-  //Serial.println(";");
 }
 void onSetPIDKp()
 {
   Kp = cmdMessenger.readFloatArg();
   EEPROM.updateDouble(addressEE[addressPIDKp],Kp);  
-  //Serial.print("INFO@PIDKp|");
-  //Serial.print(Kp);
-  //Serial.println(";");
   myPID.SetTunings(Kp, Ki, Kd);
 
 }
@@ -447,9 +438,6 @@ void onSetPIDKi()
 {
   Ki = cmdMessenger.readFloatArg();
   EEPROM.updateDouble(addressEE[addressPIDKi],Ki);  
-  //Serial.print("INFO@PIDKi|");
-  //Serial.print(Ki);
-  //Serial.println(";");
   myPID.SetTunings(Kp, Ki, Kd);
 }
 
@@ -457,9 +445,6 @@ void onSetPIDKd()
 {
   Kd = cmdMessenger.readFloatArg();
   EEPROM.updateDouble(addressEE[addressPIDKd],Kd);  
-  //Serial.print("INFO@PIDKd|");
-  //Serial.print(Kd);
-  //Serial.println(";");
   myPID.SetTunings(Kp, Ki, Kd);
 }
 
@@ -735,9 +720,6 @@ void setup()
     thermometersActive[i] = true;
     if (!sensors.getAddress(thermometers[i], i)) 
     {    
-	    // Serial.print("NoAddress|"); 
-	    // Serial.print(i);
-	    // Serial.println(";");
          thermometersActive[i] = false;
 	     didNotFindAllSensors = true;
          continue;
@@ -754,15 +736,10 @@ void setup()
   
 
   if (didNotFindAllSensors == true){
-    Serial.println("{noSensors: true}");
+    Serial.println("{\"noSensors\": true}");
   }
 
-  
-  //Serial.print("ParasitePower|"); 
-  //if (sensors.isParasitePowerMode()) Serial.println("ON;");
-  //else Serial.println("OFF;");
-  //
-
+ 
   setEEPromAddress();
   updateLocalFromEEPROM();
   setupPID();
