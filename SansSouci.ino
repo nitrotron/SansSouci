@@ -63,7 +63,7 @@ bool TimerAlarmActive = 0;
 bool AuxOn = 0;
 bool PumpOn = 0;
 bool RimsEnable = 0;
-bool DebugModeOn = 0;
+
 
 
 // Database and time variables
@@ -110,8 +110,7 @@ enum
     TurnOnRims, //14
     TurnOnPump, // 15
     TurnOnAux,  //16
-    SetInitialClock, //17
-    SetDebugModeOn // 18
+    SetInitialClock //17
 };
 
 enum
@@ -156,7 +155,6 @@ void attachCommandCallbacks()
   cmdMessenger.attach(TurnOnPump,			  onTurnOnPump);				
   cmdMessenger.attach(TurnOnAux,			  onTurnOnAux);					
   cmdMessenger.attach(SetInitialClock,		  onSetInitialClock);			
-  cmdMessenger.attach(SetDebugModeOn, onSetDebugModeOn);
 }
 
 void setEEPromAddress()
@@ -218,19 +216,6 @@ void onReturnUnknownCmd()
 }
 
 
-//void printKeyValue( const char *key, uint8_t valLen, const char *val, bool lastOfList)
-//{
-//  //uint8_t message[keyLen+valLen+3];
-//  
-//  
-//  Serial.print(key);
-//  Serial.print(':');
-//  Serial.print(val);
-//  if (lastOfList == false) {
-//    Serial.print(',');
-//  }
-//}
-
 //Used to provide general status()
 void onReturnStatus()
 {
@@ -239,16 +224,15 @@ void onReturnStatus()
   Serial.print("{");
   getTemps();
   getAlarmStatus();
-//Serial.print("tempAlarmActive", sizeof(TempAlarmActive), (char *)&TempAlarmActive, false);
   getTimerStatus();
   
-  Serial.print("\"PumpOn\": "); Serial.print(PumpOn); Serial.print(", ");
-  Serial.print("\"AuxOn\": "); Serial.print(AuxOn); Serial.print(", ");
-  Serial.print("\"RimsEnable\": "); Serial.print(RimsEnable); Serial.print(", ");
-  Serial.print("\"ArduinoTime\": ");
+  Serial.print("\"pumpOn\": "); Serial.print(PumpOn); Serial.print(", ");
+  Serial.print("\"auxOn\": "); Serial.print(AuxOn); Serial.print(", ");
+  Serial.print("\"rimsEnable\": "); Serial.print(RimsEnable); Serial.print(", ");
+  Serial.print("\"arduinoTime\": ");
   Serial.print(now());
   Serial.println(",");
-  Serial.print("\"ArduinoTimeLong\": \"");
+  Serial.print("\"arduinoTimeLong\": \"");
   Serial.print(hour());
   printDigits(minute());
   printDigits(second());
@@ -262,15 +246,15 @@ void onReturnStatus()
   Serial.print("\"setPoint\": "); Serial.print(SetPoint); Serial.print(", ");
   Serial.print("\"windowSize\": "); Serial.print(WindowSize); Serial.print(", ");
   
-  Serial.print("\"Kp\":"); Serial.print(Kp); Serial.print(", ");
-  Serial.print("\"Ki\":"); Serial.print(Ki); Serial.print(", ");
-  Serial.print("\"Kd\":"); Serial.print(Kd); Serial.print(", ");
-  Serial.print("\"Output\": "); Serial.print(Output); Serial.print(", ");
+  Serial.print("\"kp\":"); Serial.print(Kp); Serial.print(", ");
+  Serial.print("\"ki\":"); Serial.print(Ki); Serial.print(", ");
+  Serial.print("\"kd\":"); Serial.print(Kd); Serial.print(", ");
+  Serial.print("\"output\": "); Serial.print(Output); Serial.print(", ");
   Serial.print("\"millis\":");
   Serial.print(millis());
   Serial.print(",");
   Serial.print("\"windowStartTime\":"); Serial.print(windowStartTime); Serial.print(", ");
-  Serial.print("\"OutputTime\":");
+  Serial.print("\"outputTime\":");
   Serial.print(millis()-windowStartTime);
 
   Serial.println("}");
@@ -294,12 +278,12 @@ void printDigits(int digits){
 void getTemps()
 {
   
-  Serial.print("thermometers: [ ");
+  Serial.print("\"thermometers\": [ ");
 
   byte i;
   double temp;
   
-  for (i = 0; i< NUM_OF_THERMOMETERS -1 ;i ++)
+  for (i = 0; i< NUM_OF_THERMOMETERS; i ++)
   {
     if (thermometersActive[i])
     {
@@ -323,7 +307,7 @@ void getTemps()
       }
 
       Serial.print("}");
-      if (i != NUM_OF_THERMOMETERS -2) {
+      if (i != NUM_OF_THERMOMETERS -1) {
         Serial.print(",");
       }
 	  
@@ -418,9 +402,6 @@ void onResetAlarm()
 
 void getAlarmStatus()
 {
-//  printKeyValue("tempAlarmActive", sizeof(TempAlarmActive), (char *)&TempAlarmActive, false);
-//  printKeyValue("timerAlarmActive", sizeof(TimerAlarmActive), (char *)&TimerAlarmActive, false);
-//  printKeyValue("whichThermoAlarm", sizeof(WhichThermometerAlarmActive), (char *)&WhichThermometerAlarmActive, false);  
   Serial.print("\"tempAlarmActive\":"); Serial.print(TempAlarmActive); Serial.print(",");
   Serial.print("\"timerAlarmActive\":"); Serial.print(TimerAlarmActive); Serial.print(",");
   Serial.print("\"whichThermoAlarm\":"); Serial.print(WhichThermometerAlarmActive); Serial.print(",");
@@ -510,10 +491,6 @@ void onSetInitialClock()
   setTime(hr,min,sec,day,month,yr); // set time to Saturday 8:29:00am Jan 1 2011
 }
 
-void onSetDebugModeOn()
-{
-  DebugModeOn = cmdMessenger.readIntArg();
-}
 
 // function that will be called when an alarm condition exists during DallasTemperatures::processAlarms();
 void alarmHandler(uint8_t* deviceAddress)
@@ -632,24 +609,22 @@ void thermometerLoopCB()
 void sendDataLogingCB()
 {
   if (acquireData == true) {
-      int i;
-	  double temp
-	  Serial.print("{\"DATALOGGING\": {");
-	  ;
-	  for (i = 0; i< NUM_OF_THERMOMETERS -1 ;i ++)
-	  {
-	    if (thermometersActive[i])
-	    {
-		  if (i != 0) {
-		  Serial.print(",");
-		  }
-	      temp = sensors.getTempF(thermometers[i]);
-	      Serial.print("\"temp\":"); Serial.print(temp); 
-	    }
-	  }
-	  
-	  
-	  Serial.println("} }");
+    int i;
+    double temp;
+    Serial.print("{\"DATALOGGING\": {");
+
+    for (i = 0; i< NUM_OF_THERMOMETERS; i ++)
+    {
+      if (thermometersActive[i])
+      {
+        if (i != 0) {
+          Serial.print(",");
+        }
+        temp = sensors.getTempF(thermometers[i]);
+        Serial.print("\"temp\":"); Serial.print(temp); 
+      }
+    }  
+    Serial.println("} }");
   }
 }
 
@@ -659,7 +634,7 @@ void getTimerStatus()
 	bool timersAdded = false;
 	time_t alarmTime;
   
-        Serial.print("\"ClearTimers\":1,");
+        Serial.print("\"clearTimers\":1,");
         Serial.print("\"timers\": [");
 	 for (uint8_t i=0; i < dtNBR_ALARMS; i++)
 	 {
@@ -688,11 +663,11 @@ void getTimerStatus()
 	 }
          Serial.print("],");
 
-	 Serial.print("\"TimersNotAllocated\":");
+	 Serial.print("\"timersNotAllocated\":");
 	 Serial.print(numAvailable);
 	 Serial.print(",");
 
-	 Serial.print("\"TotalTimers\":");
+	 Serial.print("\"totalTimers\":");
 	 Serial.print(dtNBR_ALARMS);
 	 Serial.print(",");
 }
