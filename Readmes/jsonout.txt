@@ -1,9 +1,9 @@
 {  
    "DATALOGGING":{  
-      "temp0":64.06,
-      "temp1":63.95,
-      "temp2":62.82,
-      "temp3":63.50
+      "temp0":62.04,
+      "temp1":62.82,
+      "temp2":61.47,
+      "temp3":62.38
    }
 }
 
@@ -11,37 +11,37 @@
    "thermometers":[  
       {  
          "id":0,
-         "temp":63.50,
+         "temp":62.04,
          "highAlarm":32.0000000000,
          "lowAlarm":32.0000000000,
          "sensor":4032169102500196
       },
       {  
          "id":1,
-         "temp":63.95,
+         "temp":62.82,
          "highAlarm":32.0000000000,
          "lowAlarm":32.0000000000,
          "sensor":40118328050033
       },
       {  
          "id":2,
-         "temp":62.82,
+         "temp":61.47,
          "highAlarm":32.0000000000,
          "lowAlarm":32.0000000000,
          "sensor":401711538050019
       },
       {  
          "id":3,
-         "temp":63.39,
+         "temp":62.38,
          "highAlarm":32.0000000000,
          "lowAlarm":32.0000000000,
          "sensor":4023116618150056,
          "isRims":1
       }
    ],
-   "tempAlarmActive":0,
+   "tempAlarmActive":1,
    "timerAlarmActive":0,
-   "whichThermoAlarm":0,
+   "whichThermoAlarm":3,
    "clearTimers":1,
    "timers":[  
 
@@ -51,15 +51,15 @@
    "pumpOn":0,
    "auxOn":0,
    "rimsEnable":0,
-   "arduinoTime":2,
-   "arduinoTimeLong":"0:00:02 1/1/1970",
+   "arduinoTime":61,
+   "arduinoTimeLong":"0:01:01 1/1/1970",
    "setPoint":100.00,
    "windowSize":0,
    "kp":2.00,
    "ki":5.00,
    "kd":1.00,
    "output":0.00,
-   "millis":2715,
+   "millis":61792,
    "windowStartTime":1395,
-   "outputTime":1364
+   "outputTime":60442
 }
