@@ -644,6 +644,7 @@ void getTimerStatus()
 		   Serial.print(":");
 		   Serial.print(second(alarmTime));
 		   Serial.print("\"");
+                   timersAdded = true;
 		}
 	 }
          Serial.print("],");
