@@ -128,6 +128,7 @@ enum
   addressTempAlarmL2,
   addressTempAlarmH3,
   addressTempAlarmL3,  
+  addressAcquireData,
   ADDRESSARRAYCOUNT
 };
 
@@ -172,6 +173,7 @@ void setEEPromAddress()
   addressEE[addressTempAlarmL2] = EEPROM.getAddress(sizeof(float));
   addressEE[addressTempAlarmH3] = EEPROM.getAddress(sizeof(float));
   addressEE[addressTempAlarmL3] = EEPROM.getAddress(sizeof(float));
+  addressEE[addressAcquireData] = EEPROM.getAddress(sizeof(bool));
   
   // for debugging purposes
 //  Serial.print("addressPIDSetPoint|"); Serial.print(addressEE[addressPIDSetPoint]); Serial.println(";");  
@@ -191,6 +193,9 @@ void setEEPromAddress()
 
 void updateLocalFromEEPROM()
 {
+  uint8_t tempAcuireData = EEPROM.read(addressEE[addressAcquireData]);
+  acquireData = (temptempAcuireData == 1);
+  
   SetPoint =  EEPROM.readDouble(addressEE[addressPIDSetPoint]);  
   WindowSize = EEPROM.readDouble(addressEE[addressPIDWindowSize]);
   Kp = EEPROM.readDouble(addressEE[addressPIDKp]);
@@ -204,7 +209,7 @@ void updateLocalFromEEPROM()
   onSetTempAlarmLow(EEPROM.readFloat(addressEE[addressTempAlarmL2]),2);
   onSetTempAlarmHigh(EEPROM.readFloat(addressEE[addressTempAlarmH3]),3);
   onSetTempAlarmLow(EEPROM.readFloat(addressEE[addressTempAlarmL3]),3);
-  
+    
 }
 
 
@@ -411,11 +416,13 @@ void getAlarmStatus()
 void onStartLogging()
 {
     acquireData    = true;
+	EEPROM.update(addressEE[addressAcquireData],1);  
 }
 
 void onStopLogging()
 {
     acquireData    = false;
+	EEPROM.update(addressEE[addressAcquireData],0);  
 }
 
 void onSetPIDSetPoint()
