@@ -335,7 +335,7 @@ void onSetTempAlarmHigh()
 
   onSetTempAlarmHigh(tempF, i);
   EEPROM.writeFloat(addressEE[addressTempAlarmH0+(i*2)],tempF);  
-
+  onReturnStatus();
 }
 void onSetTempAlarmHigh(float inTemp, int whichTemp)
 {
@@ -354,6 +354,7 @@ void onSetTempAlarmLow()
 
   onSetTempAlarmLow(tempF, whichWire);
   EEPROM.writeFloat(addressEE[addressTempAlarmL0+(whichWire*2)],tempF);  
+  onReturnStatus();
 }
 void onSetTempAlarmLow(float inTemp, int whichTemp)
 {
@@ -374,6 +375,8 @@ void onClearTempAlarms()
 	sensors.setLowAlarmTemp(thermometers[i], -10);
   }
 
+  onReturnStatus();
+
 }
 
 
@@ -384,7 +387,7 @@ void onSetTimer()
   
 
   AlarmId id = Alarm.timerOnce(minutes * 60, timerAlarmHandler);
-
+  onReturnStatus();
 }
 
 
@@ -404,6 +407,7 @@ void onResetAlarm()
   TempAlarmActive = 0;
   WhichThermometerAlarmActive = 0;
   TimerAlarmActive = 0;
+  onReturnStatus();
 }
 
 void getAlarmStatus()
@@ -417,29 +421,34 @@ void onStartLogging()
 {
     acquireData    = true;
 	EEPROM.update(addressEE[addressAcquireData],1);  
+	onReturnStatus();
 }
 
 void onStopLogging()
 {
     acquireData    = false;
 	EEPROM.update(addressEE[addressAcquireData],0);  
+	onReturnStatus();
 }
 
 void onSetPIDSetPoint()
 {
   SetPoint = cmdMessenger.readFloatArg();
   EEPROM.updateDouble(addressEE[addressPIDSetPoint],SetPoint);  
+  onReturnStatus();
 }
 void onSetPIDWindowSize()
 {
   WindowSize = cmdMessenger.readFloatArg();
   EEPROM.updateDouble(addressEE[addressPIDWindowSize],WindowSize);  
+  onReturnStatus();
 }
 void onSetPIDKp()
 {
   Kp = cmdMessenger.readFloatArg();
   EEPROM.updateDouble(addressEE[addressPIDKp],Kp);  
   myPID.SetTunings(Kp, Ki, Kd);
+  onReturnStatus();
 
 }
 void onSetPIDKi()
@@ -447,6 +456,7 @@ void onSetPIDKi()
   Ki = cmdMessenger.readFloatArg();
   EEPROM.updateDouble(addressEE[addressPIDKi],Ki);  
   myPID.SetTunings(Kp, Ki, Kd);
+  onReturnStatus();
 }
 
 void onSetPIDKd()
@@ -454,23 +464,27 @@ void onSetPIDKd()
   Kd = cmdMessenger.readFloatArg();
   EEPROM.updateDouble(addressEE[addressPIDKd],Kd);  
   myPID.SetTunings(Kp, Ki, Kd);
+  onReturnStatus();
 }
 
 void onTurnOnRims()
 {
   RimsEnable = cmdMessenger.readIntArg();
   digitalWrite(RIMSENABLE_PIN, !RimsEnable);
+  onReturnStatus();
 }
 void onTurnOnPump()
 {
   PumpOn = cmdMessenger.readIntArg();
   
   digitalWrite(PUMP_PIN, !PumpOn);
+  onReturnStatus();
 }
 void onTurnOnAux()
 {
   AuxOn = cmdMessenger.readIntArg();
   digitalWrite(AUX_PIN, !AuxOn);
+  onReturnStatus();
 }
 void onSetInitialClock()
 {
@@ -482,6 +496,7 @@ void onSetInitialClock()
    byte yr = cmdMessenger.readIntArg();
 
   setTime(hr,min,sec,day,month,yr); // set time to Saturday 8:29:00am Jan 1 2011
+  onReturnStatus();
 }
 
 
