@@ -194,7 +194,7 @@ void setEEPromAddress()
 void updateLocalFromEEPROM()
 {
   uint8_t tempAcuireData = EEPROM.read(addressEE[addressAcquireData]);
-  acquireData = (temptempAcuireData == 1);
+  acquireData = (tempAcuireData == 1);
   
   SetPoint =  EEPROM.readDouble(addressEE[addressPIDSetPoint]);  
   WindowSize = EEPROM.readDouble(addressEE[addressPIDWindowSize]);
