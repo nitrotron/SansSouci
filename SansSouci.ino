@@ -632,7 +632,8 @@ void sendDataLogingCB()
         Serial.print("\"temp"); Serial.print(i); Serial.print("\":"); Serial.print(temp); 
       }
     }  
-	Serial.print("\"setPoint\": "); Serial.print(SetPoint); Serial.print(", ");
+    Serial.print(", ");
+    Serial.print("\"setPoint\": "); Serial.print(SetPoint); Serial.print(", ");
     Serial.print("\"kp\":"); Serial.print(Kp); Serial.print(", ");
     Serial.print("\"ki\":"); Serial.print(Ki); Serial.print(", ");
     Serial.print("\"kd\":"); Serial.print(Kd); Serial.print(", ");
