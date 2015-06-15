@@ -369,6 +369,12 @@ void onInterrupt()
 void onResetAlarm()
 {
   turnOffAlarm();
+  if (TempAlarmActive == 1) 
+  {
+    sensors.setHighAlarmTemp(thermometers[WhichThermometerAlarmActive], 125);
+	sensors.setLowAlarmTemp(thermometers[WhichThermometerAlarmActive], -10);
+  }
+  
   TempAlarmActive = 0;
   WhichThermometerAlarmActive = 0;
   TimerAlarmActive = 0;
