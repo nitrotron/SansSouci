@@ -369,16 +369,43 @@ void onInterrupt()
 void onResetAlarm()
 {
   turnOffAlarm();
+  
+  uint8_t deviceCount = sensors.getDeviceCount();
+  float t=0;
+
+  // there was race conditions where it's just best to reset all pressing alarms.
   if (TempAlarmActive == 1) 
   {
-    sensors.setHighAlarmTemp(thermometers[WhichThermometerAlarmActive], 125);
-	sensors.setLowAlarmTemp(thermometers[WhichThermometerAlarmActive], -10);
+    for(uint8_t i = 0; i < deviceCount; i++) {
+      t = sensors.getTempC(thermometers[i]);
+      if (sensors.hasAlarm(thermometers[i])) {
+        if(t >= sensors.getHighAlarmTemp(thermometers[i])) {
+            sensors.setHighAlarmTemp(thermometers[i], 125);
+        }
+        if (t <= sensors.getLowAlarmTemp(thermometers[i])) {
+            sensors.setLowAlarmTemp(thermometers[i], -10);
+        }
+      }
+    }
   }
+  
   
   TempAlarmActive = 0;
   WhichThermometerAlarmActive = 0;
   TimerAlarmActive = 0;
   onReturnStatus();
+}
+
+bool checkAlarm(DeviceAddress deviceAddress)
+{
+  if (sensors.hasAlarm(deviceAddress))
+  {
+   return true;
+  }
+  else 
+  {
+    return false;
+  }
 }
 
 void getAlarmStatus()
