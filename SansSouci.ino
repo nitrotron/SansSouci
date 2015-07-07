@@ -45,6 +45,7 @@ volatile unsigned long last_micros;
 #define TIMER_ALARM_HW_ENABLED 11
 #define TEMP_ALARM_HW_ENABLED 12
 #define LED_PIN 13
+#define TEMP_ALARM_BUFFER 3
 
 // Setup a oneWire instance to communicate with any OneWire devices (not just Maxim/Dallas temperature ICs)
 OneWire oneWire(ONE_WIRE_BUS);
@@ -379,10 +380,10 @@ void onResetAlarm()
     for(uint8_t i = 0; i < deviceCount; i++) {
       t = sensors.getTempC(thermometers[i]);
       if (sensors.hasAlarm(thermometers[i])) {
-        if(t >= sensors.getHighAlarmTemp(thermometers[i])) {
-            sensors.setHighAlarmTemp(thermometers[i], 125);
+        if(t >= (sensors.getHighAlarmTemp(thermometers[i]) - TEMP_ALARM_BUFFER)) {
+           sensors.setHighAlarmTemp(thermometers[i], 125);
         }
-        if (t <= sensors.getLowAlarmTemp(thermometers[i])) {
+        if (t <= sensors.getLowAlarmTemp(thermometers[i])+ TEMP_ALARM_BUFFER) {
             sensors.setLowAlarmTemp(thermometers[i], -10);
         }
       }
