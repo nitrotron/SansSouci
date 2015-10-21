@@ -86,6 +86,9 @@ PID myPID(&Input, &Output, &SetPoint,2,5,1, DIRECT);
 int WindowSize = 5000;
 unsigned long windowStartTime;
 
+bool tempAlarmSent = false;
+bool timeAlarmSent = false;
+
 
 // Attach a new CmdMessenger object to the default Serial port
 CmdMessenger cmdMessenger = CmdMessenger(Serial);
@@ -506,6 +509,10 @@ void alarmHandler(uint8_t* deviceAddress)
   WhichThermometerAlarmActive = whichThermometer(deviceAddress);
   int alarmEn = digitalRead(TEMP_ALARM_HW_ENABLED);
   turnOnAlarm();
+  if (tempAlarmSent == false) {
+      onReturnStatus();    
+      tempAlarmSent = true;
+  }
 }
 
 byte whichThermometer(DeviceAddress deviceAddress)
@@ -534,6 +541,10 @@ void timerAlarmHandler()
   int alarmEn = digitalRead(TIMER_ALARM_HW_ENABLED);
   
   turnOnAlarm();
+  if (timeAlarmSent == false) {
+      onReturnStatus();    
+      timeAlarmSent = true;
+  }
 }
 
 // function that will be called when an alarm condition exists during DallasTemperatures::processAlarms();
@@ -541,8 +552,7 @@ void turnOnAlarm()
 {
   digitalWrite(ALARM_PIN, LOW);
   digitalWrite(LED_PIN, HIGH);
-  onReturnStatus();
-}
+  }
 
 // function that will be called when an alarm condition exists during DallasTemperatures::processAlarms();
 void turnOffAlarm()
@@ -550,6 +560,8 @@ void turnOffAlarm()
   digitalWrite(ALARM_PIN, HIGH);
   digitalWrite(LED_PIN, LOW);
   onReturnStatus();
+  tempAlarmSent= false;
+  timeAlarmSent = false;
 }
  
  void setupPID()
