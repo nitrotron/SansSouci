@@ -541,6 +541,7 @@ void turnOnAlarm()
 {
   digitalWrite(ALARM_PIN, LOW);
   digitalWrite(LED_PIN, HIGH);
+  onReturnStatus();
 }
 
 // function that will be called when an alarm condition exists during DallasTemperatures::processAlarms();
@@ -548,6 +549,7 @@ void turnOffAlarm()
 {
   digitalWrite(ALARM_PIN, HIGH);
   digitalWrite(LED_PIN, LOW);
+  onReturnStatus();
 }
  
  void setupPID()
