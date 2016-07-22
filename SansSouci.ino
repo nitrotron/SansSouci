@@ -737,7 +737,7 @@ void setup()
   digitalWrite(ALARM_PIN, HIGH);
   pinMode(ALARM_PIN, OUTPUT);
   //TAM !!!!!!!!!!!!!!!!!!!!!! THIS LINE SEEMED TO CAUSE PROBLEMS
-  attachInterrupt(0, onInterrupt, RISING);
+//  attachInterrupt(0, onInterrupt, RISING);
   //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   
   String debugMessage;
